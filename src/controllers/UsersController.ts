@@ -10,6 +10,7 @@ import { Request, Response, NextFunction } from "express";
 import { LocalStrategyInfo } from "passport-local";
 import { WriteError } from "mongodb";
 import * as moment from "moment";
+import * as  _ from "underscore";
 const request = require("express-validator");
 
 // TODO: Check for duplicates/users
@@ -24,12 +25,8 @@ export let postRegister = (req: Request, res: Response, next: NextFunction) => {
         res.status(400).send(errors);
         return;
     }
-    var user: IUser = new User({
-        email: req.body.email, password: req.body.password,
-        username: req.body.username, firstName: req.body.firstName,
-        lastName: req.body.lastName, userType: req.body.userType,
-        lastLogin: new Date(), createdOn: new Date()
-    });
+    
+    var user: IUser = new User(_.extend(req.body, { lastLogin: new Date(), createdOn: new Date()}));
     user.save(function (err: mongoose.Error) {
         if (err) {
             res.status(400).send({ message: "Username or email already exists" });
