@@ -5,6 +5,8 @@ export interface IUser extends mongoose.Document {
     username: string;
     firstName?: string;
     lastName?: string;
+    // Two types of users, more can follow if needed (producer/cook vs consumer/buyer etc)
+    userType: string;
     lastLogin: Date;
     createdOn: Date;
     comparePassword(candidatePassword: string, cb: (err: any, isMatch: any) => {}): void;

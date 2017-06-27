@@ -9,6 +9,7 @@ export const userSchema = new mongoose.Schema({
   username: {type: String, required: true, unique: true},
   firstName: {type: String},
   lastName: {type: String},
+  userType: {type: String, required: true},
   lastLogin: {type: Date, required: true},
   createdOn: {type: Date, required: true}
 });

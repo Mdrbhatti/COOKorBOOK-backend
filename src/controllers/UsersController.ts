@@ -15,6 +15,7 @@ const request = require("express-validator");
 // TODO: Check for duplicates/users
 export let postRegister = (req: Request, res: Response, next: NextFunction) => {
     req.assert("email", "Email is not valid").isEmail();
+    req.assert("userType", "User must have a type").len(4);
     req.assert("password", "Password must be at least 4 characters long").len(4);
     req.assert("username", "Username must be at least 4 characters long").len(4);
     const errors = req.validationErrors();
@@ -23,11 +24,11 @@ export let postRegister = (req: Request, res: Response, next: NextFunction) => {
         res.status(400).send(errors);
         return;
     }
-    console.log(req.body);
     var user: IUser = new User({
-        email: req.body.email, password: req.body.password, 
+        email: req.body.email, password: req.body.password,
         username: req.body.username, firstName: req.body.firstName,
-        lastName: req.body.lastName, lastLogin: new Date(), createdOn: new Date()
+        lastName: req.body.lastName, userType: req.body.userType,
+        lastLogin: new Date(), createdOn: new Date()
     });
     user.save(function (err: mongoose.Error) {
         if (err) {
