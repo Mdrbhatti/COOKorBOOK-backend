@@ -25,8 +25,8 @@ export let postRegister = (req: Request, res: Response, next: NextFunction) => {
         res.status(400).send(errors);
         return;
     }
-    
-    var user: IUser = new User(_.extend(req.body, { lastLogin: new Date(), createdOn: new Date()}));
+
+    var user: IUser = new User(_.extend(req.body, { lastLogin: new Date(), createdOn: new Date() }));
     user.save(function (err: mongoose.Error) {
         if (err) {
             res.status(400).send({ message: "Username or email already exists" });
@@ -50,7 +50,6 @@ export let postLogin = (req: Request, res: Response, next: NextFunction) => {
                 if (isMatch) {
                     var payload = { id: user.id };
                     var token = jwt.sign(payload, process.env.SESSION_SECRET);
-
                     res.json({ message: "ok", token: token });
                     user.lastLogin = new Date();
                     user.save();
@@ -68,7 +67,7 @@ export let postLogin = (req: Request, res: Response, next: NextFunction) => {
 // Testing for JWT
 export let postProtected = (req: Request, res: Response, next: NextFunction) => {
     const jwtToken = req.get('Authorization').slice(4);
-    const userId: string = (<any> jwt.decode(jwtToken)).id; // Error handling?
+    const userId: string = (<any>jwt.decode(jwtToken)).id; // Error handling?
     User.findOne({ _id: userId }, function (err: mongoose.Error, user: IUser) {
         if (err || !user) {
             res.status(400).send({ message: "This shouldn't happen" });
