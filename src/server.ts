@@ -9,9 +9,9 @@ import * as mongoose from "mongoose";
 import * as lusca from "lusca";
 import * as bodyParser from "body-parser";
 import * as passport from "passport";
-import * as userController from "./controllers/user";
+import * as userController from "./controllers/UsersController";
 import * as jwt from "jsonwebtoken";
-import { User } from "./models/User";
+import { User } from "./models/UserModel";
 import { Request, Response, NextFunction } from "express";
 import expressValidator = require("express-validator");
 

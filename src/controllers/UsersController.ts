@@ -3,7 +3,7 @@ import * as crypto from "crypto";
 import * as nodemailer from "nodemailer";
 import * as passport from "passport";
 import * as jwt from "jsonwebtoken";
-import { User } from "../models/User";
+import { User } from "../models/UserModel";
 import { IUser } from "../interfaces/IUser";
 import * as mongoose from 'mongoose';
 import { Request, Response, NextFunction } from "express";
