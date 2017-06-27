@@ -53,6 +53,7 @@ export let postLogin = (req: Request, res: Response, next: NextFunction) => {
                 if (isMatch) {
                     var payload = { id: user.id };
                     var token = jwt.sign(payload, process.env.SESSION_SECRET);
+
                     res.json({ message: "ok", token: token });
                     user.lastLogin = new Date();
                     user.save();
@@ -63,11 +64,20 @@ export let postLogin = (req: Request, res: Response, next: NextFunction) => {
                 // Some funky shit
                 return null;
             });
-
         }
     });
 };
 
+// Testing for JWT
 export let postProtected = (req: Request, res: Response, next: NextFunction) => {
-    res.send('Condom works ;)');
+    const jwtToken = req.get('Authorization').slice(4);
+    const userId: string = (<any> jwt.decode(jwtToken)).id; // Error handling?
+    User.findOne({ _id: userId }, function (err: mongoose.Error, user: IUser) {
+        if (err || !user) {
+            res.status(400).send({ message: "This shouldn't happen" });
+        }
+        else {
+            res.send(user);
+        }
+    });
 };
