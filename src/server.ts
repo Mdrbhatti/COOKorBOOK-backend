@@ -78,7 +78,8 @@ app.use(lusca.xssProtection(true));
 // Define all routes here
 app.post('/register', userController.postRegister);
 app.post('/login', userController.postLogin);
-app.post('/protected', passport.authenticate('jwt', { session: false }), userController.postProtected);
+app.put('/user', passport.authenticate('jwt', { session: false }), userController.putUser);
+app.get('/user', passport.authenticate('jwt', { session: false }), userController.getUser);
 
 // Disable in prodcution
 app.use(errorHandler());

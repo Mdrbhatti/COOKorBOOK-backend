@@ -13,6 +13,11 @@ import * as moment from "moment";
 import * as  _ from "underscore";
 const request = require("express-validator");
 
+function getUserIdFromJwt(req: Request): string{
+    const jwtToken = req.get('Authorization').slice(4);
+    const userId: string = (<any>jwt.decode(jwtToken)).id;
+    return userId;
+}
 // TODO: Check for duplicates/users
 export let postRegister = (req: Request, res: Response, next: NextFunction) => {
     req.assert("email", "Email is not valid").isEmail();
@@ -64,15 +69,24 @@ export let postLogin = (req: Request, res: Response, next: NextFunction) => {
     });
 };
 
-// Testing for JWT
-export let postProtected = (req: Request, res: Response, next: NextFunction) => {
-    const jwtToken = req.get('Authorization').slice(4);
-    const userId: string = (<any>jwt.decode(jwtToken)).id; // Error handling?
-    User.findOne({ _id: userId }, function (err: mongoose.Error, user: IUser) {
+export let putUser = (req: Request, res: Response, next: NextFunction) => {
+    // Only a user can update his account (while logged in) 
+    User.findOneAndUpdate({_id: getUserIdFromJwt(req)}, req.body, function (err: mongoose.Error, user: IUser) {
         if (err || !user) {
-            res.status(400).send({ message: "This shouldn't happen" });
+            res.status(400).send({ message: "Can't find user to update" });
         }
-        else {
+        else{
+            res.send(user);
+        }
+    });
+};
+
+export let getUser = (req: Request, res: Response, next: NextFunction) => {
+    User.findOne({username: req.headers.username}, function (err: mongoose.Error, user: IUser) {
+        if (err || !user) {
+            res.status(400).send({ message: "Can't find user" });
+        }
+        else{
             res.send(user);
         }
     });
