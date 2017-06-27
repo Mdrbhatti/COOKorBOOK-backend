@@ -12,6 +12,7 @@ import * as passport from "passport";
 import * as userController from "./controllers/UsersController";
 import * as jwt from "jsonwebtoken";
 import { User } from "./models/UserModel";
+import { IUser } from "./interfaces/IUser";
 import { Request, Response, NextFunction } from "express";
 import expressValidator = require("express-validator");
 
@@ -56,9 +57,8 @@ jwtOptions.secretOrKey = process.env.SESSION_SECRET;
 
 var strategy = new JwtStrategy(jwtOptions, function (jwt_payload: any, next: any) {
   // Find user in db
-  User.findOne({ "_id": jwt_payload.id }, function (err, user) {
+  User.findOne({ "_id": jwt_payload.id }, function (err, user: IUser) {
     if (user) {
-      console.log("FOUND ID USERNAME" + user.toString());
       next(null, user);
     }
     else {

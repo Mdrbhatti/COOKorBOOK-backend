@@ -9,6 +9,7 @@ import * as mongoose from 'mongoose';
 import { Request, Response, NextFunction } from "express";
 import { LocalStrategyInfo } from "passport-local";
 import { WriteError } from "mongodb";
+import * as moment from "moment";
 const request = require("express-validator");
 
 // TODO: Check for duplicates/users
@@ -22,9 +23,12 @@ export let postRegister = (req: Request, res: Response, next: NextFunction) => {
         res.status(400).send(errors);
         return;
     }
-    console.log("Request" + req.body.email);
-
-    var user: IUser = new User({ email: req.body.email, password: req.body.password, username: req.body.username });
+    console.log(req.body);
+    var user: IUser = new User({
+        email: req.body.email, password: req.body.password, 
+        username: req.body.username, firstName: req.body.firstName,
+        lastName: req.body.lastName, lastLogin: new Date(), createdOn: new Date()
+    });
     user.save(function (err: mongoose.Error) {
         if (err) {
             res.status(400).send({ message: "Username or email already exists" });
@@ -39,7 +43,7 @@ export let postRegister = (req: Request, res: Response, next: NextFunction) => {
 };
 
 export let postLogin = (req: Request, res: Response, next: NextFunction) => {
-    User.findOne({ username: req.body.username }, function (err, user: IUser) {
+    User.findOne({ username: req.body.username }, function (err: mongoose.Error, user: IUser) {
         if (err || !user) {
             res.status(400).send({ message: "Invalid username or password" });
         }
@@ -49,6 +53,8 @@ export let postLogin = (req: Request, res: Response, next: NextFunction) => {
                     var payload = { id: user.id };
                     var token = jwt.sign(payload, process.env.SESSION_SECRET);
                     res.json({ message: "ok", token: token });
+                    user.lastLogin = new Date();
+                    user.save();
                 }
                 else {
                     res.status(400).send({ message: "Invalid username or password" });

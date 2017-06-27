@@ -4,12 +4,17 @@ import * as passport from "passport";;
 import {IUser} from '../interfaces/IUser';
 
 export const userSchema = new mongoose.Schema({
-  email: {type:String, required: true, unique: true},
-  password: {type:String, required: true},
-  username: {type:String, required: true, unique: true}
+  email: {type: String, required: true, unique: true},
+  password: {type: String, required: true},
+  username: {type: String, required: true, unique: true},
+  firstName: {type: String},
+  lastName: {type: String},
+  lastLogin: {type: Date, required: true},
+  createdOn: {type: Date, required: true}
 });
+
 userSchema.pre('save', function(next) {  
-  const user = this,
+  const user: IUser = this,
         SALT_FACTOR = 5;
 
   if (!user.isModified('password')) return next();
@@ -24,6 +29,7 @@ userSchema.pre('save', function(next) {
     });
   });
 });
+
 userSchema.methods.comparePassword = function(candidatePassword: string, cb: (err: any, isMatch: any) => {}) {
   bcrypt.compare(candidatePassword, this.password, (err: mongoose.Error , isMatch: boolean) => {
     cb(err, isMatch);
