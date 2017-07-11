@@ -12,7 +12,7 @@ import { LocalStrategyInfo } from "passport-local";
 import { WriteError } from "mongodb";
 const moment = require("moment");
 // import * as moment from "moment";
-const _ = require("underscord");
+const _ = require("underscore");
 // import * as  _ from "underscore";
 const request = require("express-validator");
 
