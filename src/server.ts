@@ -5,16 +5,19 @@ import * as compression from "compression";
 import * as mongo from "connect-mongo"; // (session)
 import * as session from "express-session";
 import * as dotenv from "dotenv";
-import * as mongoose from "mongoose";
+import mongoose = require("mongoose");
 import * as lusca from "lusca";
 import * as bodyParser from "body-parser";
 import * as passport from "passport";
 import * as userController from "./controllers/UsersController";
-import * as jwt from "jsonwebtoken";
+import * as itemController from "./controllers/ItemController";
+const jwt = require("jsonwebtoken");
 import { User } from "./models/UserModel";
 import { IUser } from "./interfaces/IUser";
 import { Request, Response, NextFunction } from "express";
 import expressValidator = require("express-validator");
+
+mongoose.Promise = global.Promise;
 
 const MongoStore = mongo(session);
 /**
@@ -31,7 +34,7 @@ mongoose.connection.on("error", () => {
 const app = express();
 // Log all requests
 app.use(logger("dev"));
-// compress responses 
+// compress responses
 app.use(compression())
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -76,10 +79,11 @@ app.use(lusca.xframe("SAMEORIGIN"));
 app.use(lusca.xssProtection(true));
 
 // Define all routes here
-app.post('/register', userController.postRegister);
-app.post('/login', userController.postLogin);
-app.put('/user', passport.authenticate('jwt', { session: false }), userController.putUser);
-app.get('/user', passport.authenticate('jwt', { session: false }), userController.getUser);
+app.post("/register", userController.postRegister);
+app.post("/login", userController.postLogin);
+app.put("/user", passport.authenticate("jwt", { session: false }), userController.putUser);
+app.get("/user", passport.authenticate("jwt", { session: false }), userController.getUser);
+app.get("/items/:title?", itemController.getItems); // auto-complete functionality
 
 // Disable in prodcution
 app.use(errorHandler());
