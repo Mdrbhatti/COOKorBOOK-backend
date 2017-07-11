@@ -31,7 +31,7 @@ mongoose.connection.on("error", () => {
 const app = express();
 // Log all requests
 app.use(logger("dev"));
-// compress responses 
+// compress responses
 app.use(compression())
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -76,11 +76,11 @@ app.use(lusca.xframe("SAMEORIGIN"));
 app.use(lusca.xssProtection(true));
 
 // Define all routes here
-app.post('/register', userController.postRegister);
-app.post('/login', userController.postLogin);
-app.put('/user', passport.authenticate('jwt', { session: false }), userController.putUser);
-app.get('/user', passport.authenticate('jwt', { session: false }), userController.getUser);
-
+app.post("/register", userController.postRegister);
+app.post("/login", userController.postLogin);
+app.put("/user", passport.authenticate("jwt", { session: false }), userController.putUser);
+app.get("/user", passport.authenticate("jwt", { session: false }), userController.getUser);
+app.post("/items", itemController.postItem);
 // Disable in prodcution
 app.use(errorHandler());
 
