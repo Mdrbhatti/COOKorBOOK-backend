@@ -10,7 +10,7 @@ import * as lusca from "lusca";
 import * as bodyParser from "body-parser";
 import * as passport from "passport";
 import * as userController from "./controllers/UsersController";
-import * as jwt from "jsonwebtoken";
+const jwt = require('jsonwebtoken');
 import { User } from "./models/UserModel";
 import { IUser } from "./interfaces/IUser";
 import { Request, Response, NextFunction } from "express";
@@ -31,7 +31,7 @@ mongoose.connection.on("error", () => {
 const app = express();
 // Log all requests
 app.use(logger("dev"));
-// compress responses 
+// compress responses
 app.use(compression())
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));

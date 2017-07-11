@@ -2,15 +2,18 @@ import * as async from "async";
 import * as crypto from "crypto";
 import * as nodemailer from "nodemailer";
 import * as passport from "passport";
-import * as jwt from "jsonwebtoken";
+const jwt = require('jsonwebtoken');
+// import * as jwt from "jsonwebtoken";
 import { User } from "../models/UserModel";
 import { IUser } from "../interfaces/IUser";
 import * as mongoose from 'mongoose';
 import { Request, Response, NextFunction } from "express";
 import { LocalStrategyInfo } from "passport-local";
 import { WriteError } from "mongodb";
-import * as moment from "moment";
-import * as  _ from "underscore";
+const moment = require('moment');
+// import * as moment from "moment";
+const _ = require('underscord');
+// import * as  _ from "underscore";
 const request = require("express-validator");
 
 function getUserIdFromJwt(req: Request): string{
@@ -70,7 +73,7 @@ export let postLogin = (req: Request, res: Response, next: NextFunction) => {
 };
 
 export let putUser = (req: Request, res: Response, next: NextFunction) => {
-    // Only a user can update his account (while logged in) 
+    // Only a user can update his account (while logged in)
     User.findOneAndUpdate({_id: getUserIdFromJwt(req)}, req.body, function (err: mongoose.Error, user: IUser) {
         if (err || !user) {
             res.status(400).send({ message: "Can't find user to update" });
