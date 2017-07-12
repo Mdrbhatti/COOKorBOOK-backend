@@ -5,6 +5,16 @@ import { IItem } from "../interfaces/IItem";
 import { Request, Response } from "express";
 import * as mongoose from "mongoose";
 
+
+export const getItems = (req: Request, res: Response) => {
+  const title = req.params.title;
+  Item.find({ title: new RegExp(title, "i") })
+    .limit(10)
+    .exec()
+    .then((items: Array<IItem>) => {
+      res.jsonp(items);
+    });
+
 export const postItem = (req: Request, res: Response) => {
   const errors: Array<string> = [];
   const item: IItem = new Item({
