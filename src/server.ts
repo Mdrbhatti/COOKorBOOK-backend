@@ -84,6 +84,7 @@ app.post("/login", userController.postLogin);
 app.put("/user", passport.authenticate("jwt", { session: false }), userController.putUser);
 app.get("/user", passport.authenticate("jwt", { session: false }), userController.getUser);
 app.get("/items/:title?", itemController.getItems); // auto-complete functionality
+app.post("/items", itemController.postItem);
 
 // Disable in prodcution
 app.use(errorHandler());
