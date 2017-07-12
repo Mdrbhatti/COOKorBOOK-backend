@@ -1,7 +1,7 @@
-import * as mongoose from 'mongoose';
+import * as mongoose from "mongoose";
 import * as bcrypt from "bcrypt-nodejs";
-import * as passport from "passport";;
-import { IUser } from '../interfaces/IUser';
+import * as passport from "passport";
+import { IUser } from "../interfaces/IUser";
 
 export const userSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
@@ -16,16 +16,16 @@ export const userSchema = new mongoose.Schema({
   createdOn: { type: Date, required: true }
 });
 
-userSchema.pre('save', function (next) {
+userSchema.pre("save", function (next) {
   const user: IUser = this,
     SALT_FACTOR = 5;
 
-  if (!user.isModified('password')) return next();
+  if (!user.isModified("password")) return next();
 
   bcrypt.genSalt(SALT_FACTOR, function (err, salt) {
     if (err) return next(err);
 
-    bcrypt.hash(user.password, salt, null, function (err, hash) {
+    bcrypt.hash(user.password, salt, undefined, function (err, hash) {
       if (err) return next(err);
       user.password = hash;
       next();
