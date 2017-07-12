@@ -1,4 +1,4 @@
-import * as mongoose from 'mongoose';
+import * as mongoose from "mongoose";
 export interface IUser extends mongoose.Document {
     email: string;
     password: string;
@@ -12,4 +12,4 @@ export interface IUser extends mongoose.Document {
     lastLogin: Date;
     createdOn: Date;
     comparePassword(candidatePassword: string, cb: (err: any, isMatch: any) => {}): void;
-};
+}
