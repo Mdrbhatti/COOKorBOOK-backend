@@ -33,7 +33,7 @@ const app = express();
 // Log all requests
 app.use(logger("dev"));
 // compress responses
-app.use(compression())
+app.use(compression());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(expressValidator());
@@ -49,23 +49,23 @@ app.use(session({
 }));
 
 // JWT-Auth strategy
-var JwtStrategy = require("passport-jwt").Strategy,
+const JwtStrategy = require("passport-jwt").Strategy,
   ExtractJwt = require("passport-jwt").ExtractJwt;
 
-var jwtOptions: any = {};
+const jwtOptions: any = {};
 jwtOptions.jwtFromRequest = ExtractJwt.fromAuthHeader();
 jwtOptions.secretOrKey = process.env.SESSION_SECRET;
 
-var strategy = new JwtStrategy(jwtOptions, function (jwt_payload: any, next: any) {
+const strategy = new JwtStrategy(jwtOptions, function (jwt_payload: any, next: any) {
   // Find user in db
   User.findOne({ "_id": jwt_payload.id }, function (err, user: IUser) {
     if (user) {
-      next(null, user);
+      next(undefined, user);
     }
     else {
       console.log("Invalid token");
       // Let middleware take care of it :)
-      next(null, false);
+      next(undefined, false);
     }
   });
 });
