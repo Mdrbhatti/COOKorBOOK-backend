@@ -10,6 +10,7 @@ import * as lusca from "lusca";
 import * as bodyParser from "body-parser";
 import * as passport from "passport";
 import * as userController from "./controllers/UsersController";
+import * as itemController from "./controllers/ItemController";
 const jwt = require("jsonwebtoken");
 import { User } from "./models/UserModel";
 import { IUser } from "./interfaces/IUser";
@@ -80,6 +81,7 @@ app.post("/register", userController.postRegister);
 app.post("/login", userController.postLogin);
 app.put("/user", passport.authenticate("jwt", { session: false }), userController.putUser);
 app.get("/user", passport.authenticate("jwt", { session: false }), userController.getUser);
+app.post("/items", itemController.postItem);
 
 // Disable in prodcution
 app.use(errorHandler());
