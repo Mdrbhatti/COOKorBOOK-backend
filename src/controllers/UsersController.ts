@@ -41,7 +41,7 @@ export let postRegister = (req: Request, res: Response, next: NextFunction) => {
         }
         else {
             // Return token
-            const payload = { id: user.id };
+            const payload = { id: user._id };
             const token = jwt.sign(payload, process.env.SESSION_SECRET);
             res.json({ message: "ok", token: token });
         }
@@ -56,7 +56,7 @@ export let postLogin = (req: Request, res: Response, next: NextFunction) => {
         else {
             user.comparePassword(req.body.password, function (err: any, isMatch: any) {
                 if (isMatch) {
-                    const payload = { id: user.id };
+                    const payload = { id: user._id };
                     const token = jwt.sign(payload, process.env.SESSION_SECRET);
                     res.json({ message: "ok", token: token });
                     user.lastLogin = new Date();
