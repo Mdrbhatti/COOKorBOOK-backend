@@ -24,9 +24,9 @@ function getUserIdFromJwt (req: Request): string {
 // TODO: Check for duplicates/users
 export let postRegister = (req: Request, res: Response, next: NextFunction) => {
     req.assert("email", "Email is not valid").isEmail();
-    req.assert("userType", "User must have a type").len(4);
-    req.assert("password", "Password must be at least 4 characters long").len(4);
-    req.assert("username", "Username must be at least 4 characters long").len(4);
+    req.assert("userType", "User must have a type").isLength({ min: 4});
+    req.assert("password", "Password must be at least 4 characters long").isLength({ min: 4});
+    req.assert("username", "Username must be at least 4 characters long").isLength({ min: 4});
     const errors = req.validationErrors();
     // respond with errors
     if (errors) {
