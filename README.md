@@ -1,6 +1,6 @@
-# TypeScript Node Starter
+# COOKorBOOK backend
 
-[![Dependency Status](https://david-dm.org/Microsoft/TypeScript-Node-Starter.svg)](https://david-dm.org/Microsoft/TypeScript-Node-Starter) [![Build Status](https://travis-ci.org/Microsoft/TypeScript-Node-Starter.svg?branch=master)](https://travis-ci.org/Microsoft/TypeScript-Node-Starter) 
+[![Build Status](https://travis-ci.org/shumail92/COOKorBOOK-backend.svg?branch=master)](https://travis-ci.org/shumail92/COOKorBOOK-backend)
 
 # Pre-reqs
 - Install [Node.js](https://nodejs.org/en/)
@@ -8,10 +8,7 @@
 - Install [VS Code](https://code.visualstudio.com/)
 
 # Getting started
-- Clone the repository
-```
-git clone --depth=1 https://github.com/Microsoft/TypeScript-Node-Starter.git <project_name>
-```
+
 - Install dependencies
 ```
 cd <project_name>
