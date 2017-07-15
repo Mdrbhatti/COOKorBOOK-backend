@@ -78,6 +78,13 @@ app.use(passport.initialize());
 app.use(lusca.xframe("SAMEORIGIN"));
 app.use(lusca.xssProtection(true));
 
+// Enable cors
+app.use(function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  next();
+});
+
 // Define all routes here
 app.post("/register", userController.postRegister);
 app.post("/login", userController.postLogin);
