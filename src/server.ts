@@ -94,10 +94,11 @@ app.post("/login", userController.postLogin);
 app.put("/user", passport.authenticate("jwt", { session: false }), userController.putUser);
 app.get("/user", passport.authenticate("jwt", { session: false }), userController.getUser);
 app.post("/items/:id/publish", itemController.publishItem);
-app.get("/items/:title?", itemController.getItems); // auto-complete functionality
+// app.get("/items/:title?", itemController.getItems); // auto-complete functionality
+app.get("/items", itemController.getItems);
 app.post("/items", itemController.postItem);
 app.post("/items/:id/order", orderController.orderItem);
-app.post("/orders", orderController.getOrders);
+app.get("/orders", orderController.getOrders);
 
 // Disable in prodcution
 app.use(errorHandler());
