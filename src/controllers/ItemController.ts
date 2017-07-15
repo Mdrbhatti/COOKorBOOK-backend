@@ -5,7 +5,7 @@ import { Category } from "../models/CategoryModel";
 import { PublishedItem } from "../models/PublishedItemModel";
 import { IPublishedItem } from "../interfaces/IPublishedItem";
 import { getUserIdFromJwt } from "./UsersController";
-import { Request, Response} from "express";
+import { Request, Response } from "express";
 import * as mongoose from "mongoose";
 const async = require('async');
 
@@ -75,20 +75,21 @@ export const postItem = (req: Request, res: Response) => {
         }
       });
     }
-  ], function (err, result) {
-    if (err) {
-      res.status(406).send({ "error": err });
-    } else {
-      res.status(200).send(result);
-    }
-  });
+  ],
+    function (err, result) {
+      if (err) {
+        res.status(406).send({ "error": err });
+      } else {
+        res.status(200).send(result);
+      }
+    });
 }
 
 export const publishItem = (req: Request, res: Response) => {
   async.waterfall([
     // Search for item
     function (callback) {
-      Item.findOne({"_id": req.params.id}, function (err: mongoose.Error, item: IItem) {
+      Item.findOne({ "_id": req.params.id }, function (err: mongoose.Error, item: IItem) {
         if (err || !item) {
           callback("Item doesn't exist");
         }
@@ -110,15 +111,16 @@ export const publishItem = (req: Request, res: Response) => {
         if (err) {
           callback(err.message);
         } else {
-          callback(publishedItem);
+          callback(null, publishedItem);
         }
       });
     }
-  ], function (err, result) {
-    if (err) {
-      res.status(406).send({ "error": err });
-    } else {
-      res.status(200).send(result);
-    }
-  });
+  ],
+    function (err, result) {
+      if (err) {
+        res.status(406).send({ "error": err });
+      } else {
+        res.status(200).send(result);
+      }
+    });
 }

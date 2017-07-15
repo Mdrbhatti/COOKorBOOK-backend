@@ -11,6 +11,7 @@ import * as bodyParser from "body-parser";
 import * as passport from "passport";
 import * as userController from "./controllers/UsersController";
 import * as itemController from "./controllers/ItemController";
+import * as orderController from "./controllers/OrderController";
 const jwt = require("jsonwebtoken");
 import { User } from "./models/UserModel";
 import { IUser } from "./interfaces/IUser";
@@ -95,6 +96,8 @@ app.get("/user", passport.authenticate("jwt", { session: false }), userControlle
 app.post("/items/:id/publish", itemController.publishItem);
 app.get("/items/:title?", itemController.getItems); // auto-complete functionality
 app.post("/items", itemController.postItem);
+app.post("/items/:id/order", orderController.orderItem);
+app.post("/orders", orderController.getOrders);
 
 // Disable in prodcution
 app.use(errorHandler());
