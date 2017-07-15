@@ -5,7 +5,7 @@ import { PublishedItem } from "../models/PublishedItemModel";
 import { IItem } from "../interfaces/IItem";
 import { IPublishedItem } from "../interfaces/IPublishedItem";
 import { getUserIdFromJwt } from "./UsersController";
-import { Request, Response, NextFunction} from "express";
+import { Request, Response, NextFunction } from "express";
 import * as mongoose from "mongoose";
 const async = require('async');
 // const each = require('async/each');
@@ -23,24 +23,61 @@ export const getItems = (req: Request, res: Response) => {
 
 export const postItem = (req: Request, res: Response, next: NextFunction) => {
   var allergensList = req.body.allergens;
-  async.each(allergensList, function (data, callback) {
-    const allergen = new Allergen(data);
-    allergen.save((err: mongoose.Error) => {
+  var categoriesList = req.body.categories;
+  var categories = [];
+  var allergens = [];
+  async.waterfall([
+    function (callback) {
+      async.each(allergensList, function (data, cb_each) {
+        const allergen = new Allergen(data);
+        allergen.save((err: mongoose.Error) => {
+          if (err) {
+            callback(err.message);
+          }
+          else {
+            allergens.push(allergen);
+            callback(null, 'one', 'two');
+          }
+        });
+      });
+    },
+    function (arg1, arg2, callback) {
+      // arg1 now equals 'one' and arg2 now equals 'two'
+      async.each(categoriesList, function (data, cb_each) {
+        const category = new Category(data);
+        category.save((err: mongoose.Error) => {
+          if (err) {
+            callback(err.message);
+          }
+          else {
+            categories.push(category);
+            callback(null, 'one');
+          }
+        });
+      });
+    },
+    function (arg1, callback) {
+      const item: IItem = new Item({
+        "title": req.body.title,
+        "description": req.body.description,
+        "allergens": allergens,
+        "categories": categories
+      });
+      item.save((err: mongoose.Error) => {
         if (err) {
           callback(err.message);
         }
-        else{ 
-          callback()
+        else {
+          callback(null, item);
         }
       });
-  }, function (err) {
-    // if any of the file processing produced an error, err would equal that error
+    }
+  ], function (err, result) {
+    // result now equals 'done'
     if (err) {
-      // One of the iterations produced an error.
-      // All processing will now stop.
-      res.status(406).send({"error" : err});
+      res.status(406).send({ "error": err });
     } else {
-      res.status(200).send({"msg" : "done"});
+      res.status(200).send(result );
     }
   });
 }
@@ -50,7 +87,7 @@ export const postItem = (req: Request, res: Response, next: NextFunction) => {
   //     for (var i = 0; i < allergensList.length; i++) {
   //       var element = allergensList[i];
 
-        
+
   //     }
   //     console.log(allergensList); 
   //     callback(null, 'one', 'two');
@@ -108,7 +145,7 @@ export const postItem = (req: Request, res: Response, next: NextFunction) => {
   //   }
   // });
 
-};
+// };
 
 export const publishItem = (req: Request, res: Response) => {
   const errors: Array<string> = [];
@@ -127,7 +164,7 @@ export const publishItem = (req: Request, res: Response) => {
         if (err) {
           errors.push(err.message);
         }
-      });
+      }).then;
 
       if (errors.length != 0) {
         console.log(errors);
