@@ -16,7 +16,7 @@ const _ = require("underscore");
 // import * as  _ from "underscore";
 const request = require("express-validator");
 
-function getUserIdFromJwt (req: Request): string {
+export function getUserIdFromJwt (req: Request): string {
     const jwtToken = req.get("Authorization").slice(4);
     const userId: string = (<any>jwt.decode(jwtToken)).id;
     return userId;
