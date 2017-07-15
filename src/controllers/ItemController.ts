@@ -1,14 +1,13 @@
 import { Item } from "../models/ItemModel";
+import { IItem } from "../interfaces/IItem";
 import { Allergen } from "../models/AllergenModel";
 import { Category } from "../models/CategoryModel";
 import { PublishedItem } from "../models/PublishedItemModel";
-import { IItem } from "../interfaces/IItem";
 import { IPublishedItem } from "../interfaces/IPublishedItem";
 import { getUserIdFromJwt } from "./UsersController";
 import { Request, Response} from "express";
 import * as mongoose from "mongoose";
 const async = require('async');
-// const each = require('async/each');
 
 export const getItems = (req: Request, res: Response) => {
   const title = req.params.title;
@@ -46,7 +45,6 @@ export const postItem = (req: Request, res: Response) => {
     },
     // Insert categories in collection
     function (callback) {
-      // arg1 now equals 'one' and arg2 now equals 'two'
       async.each(categoriesList, function (data, cb_each) {
         const category = new Category(data);
         category.save((err: mongoose.Error) => {
@@ -78,7 +76,6 @@ export const postItem = (req: Request, res: Response) => {
       });
     }
   ], function (err, result) {
-    // result now equals 'done'
     if (err) {
       res.status(406).send({ "error": err });
     } else {
@@ -88,10 +85,20 @@ export const postItem = (req: Request, res: Response) => {
 }
 
 export const publishItem = (req: Request, res: Response) => {
-  const errors: Array<string> = [];
-
-  Item.findOne({ "_id": req.params.id })
-    .then((item: IItem) => {
+  async.waterfall([
+    // Search for item
+    function (callback) {
+      Item.findOne({"_id": req.params.id}, function (err: mongoose.Error, item: IItem) {
+        if (err || !item) {
+          callback("Item doesn't exist");
+        }
+        else {
+          callback(null, item);
+        }
+      });
+    },
+    // Save PublishedItem
+    function (item, callback) {
       const publishedItem: IPublishedItem = new PublishedItem({
         "time": req.body.time,
         "servings": req.body.servings,
@@ -99,14 +106,19 @@ export const publishItem = (req: Request, res: Response) => {
         "seller": getUserIdFromJwt(req),
         "item": item
       });
-
       publishedItem.save((err: mongoose.Error) => {
         if (err) {
-          res.status(406).send({ "error": err });
+          callback(err.message);
         } else {
-          res.status(201).send(publishedItem);;
+          callback(publishedItem);
         }
       });
-    });
+    }
+  ], function (err, result) {
+    if (err) {
+      res.status(406).send({ "error": err });
+    } else {
+      res.status(200).send(result);
+    }
+  });
 }
-
