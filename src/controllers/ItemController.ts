@@ -4,6 +4,7 @@ import { Category } from "../models/CategoryModel";
 import { PublishedItem } from "../models/PublishedItemModel";
 import { IItem } from "../interfaces/IItem";
 import { IPublishedItem } from "../interfaces/IPublishedItem";
+import { getUserIdFromJwt } from "./UsersController";
 import { Request, Response } from "express";
 import * as mongoose from "mongoose";
 
@@ -18,7 +19,7 @@ export const getItems = (req: Request, res: Response) => {
 };
 
 export const postItem = (req: Request, res: Response) => {
-  const errors: Array<string> = [];
+  var errors: Array<string> = [];
   const item: IItem = new Item({
     "title": req.body.title,
     "description": req.body.description,
@@ -45,10 +46,16 @@ export const postItem = (req: Request, res: Response) => {
       return category;
     })
   });
-  if (errors) {
+  item.save((err: mongoose.Error) => {
+        if (err) {
+          errors.push(err.message);
+        }
+      });
+  if (errors.length != 0) {
+    console.log(errors);
     res.status(406).send({ message: errors });
   } else {
-    res.status(201);
+    res.status(201).send(item);
   }
 };
 
@@ -61,7 +68,7 @@ export const publishItem = (req: Request, res: Response) => {
         "time": req.body.time,
         "servings": req.body.servings,
         "price": req.body.price,
-        "seller": req.body,
+        "seller": getUserIdFromJwt(req),
         "item": item
       });
 
