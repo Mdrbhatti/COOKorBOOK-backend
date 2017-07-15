@@ -3,7 +3,6 @@ import * as crypto from "crypto";
 import * as nodemailer from "nodemailer";
 import * as passport from "passport";
 const jwt = require("jsonwebtoken");
-// import * as jwt from "jsonwebtoken";
 import { User } from "../models/UserModel";
 import { IUser } from "../interfaces/IUser";
 import * as mongoose from "mongoose";
@@ -11,9 +10,7 @@ import { Request, Response, NextFunction } from "express";
 import { LocalStrategyInfo } from "passport-local";
 import { WriteError } from "mongodb";
 const moment = require("moment");
-// import * as moment from "moment";
 const _ = require("underscore");
-// import * as  _ from "underscore";
 const request = require("express-validator");
 
 export function getUserIdFromJwt (req: Request): string {
@@ -21,7 +18,7 @@ export function getUserIdFromJwt (req: Request): string {
     const userId: string = (<any>jwt.decode(jwtToken)).id;
     return userId;
 }
-// TODO: Check for duplicates/users
+
 export let postRegister = (req: Request, res: Response, next: NextFunction) => {
     req.assert("email", "Email is not valid").isEmail();
     req.assert("userType", "User must have a type").isLength({ min: 4});
