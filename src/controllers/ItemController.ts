@@ -21,6 +21,7 @@ export const getItems = (req: Request, res: Response) => {
   });
 };
 
+// This can be broken down into separate request in the future
 export const postItem = (req: Request, res: Response, next: NextFunction) => {
   var allergensList = req.body.allergens;
   var categoriesList = req.body.categories;
@@ -101,15 +102,11 @@ export const publishItem = (req: Request, res: Response) => {
 
       publishedItem.save((err: mongoose.Error) => {
         if (err) {
-          errors.push(err.message);
+          res.status(406).send({ "error": err });
+        } else {
+          res.status(201).send(publishedItem);;
         }
       });
-
-      if (errors.length != 0) {
-        console.log(errors);
-        res.status(406).send({ message: errors });
-      } else {
-        res.status(201).send(publishedItem);;
-      }
     });
-};
+}
+
