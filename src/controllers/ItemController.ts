@@ -26,7 +26,9 @@ export const postItem = (req: Request, res: Response, next: NextFunction) => {
   var categoriesList = req.body.categories;
   var categories = [];
   var allergens = [];
+
   async.waterfall([
+    // Insert allergens in collection
     function (callback) {
       async.each(allergensList, function (data, cb_each) {
         const allergen = new Allergen(data);
@@ -36,12 +38,13 @@ export const postItem = (req: Request, res: Response, next: NextFunction) => {
           }
           else {
             allergens.push(allergen);
-            callback(null, 'one', 'two');
+            callback(null);
           }
         });
       });
     },
-    function (arg1, arg2, callback) {
+    // Insert categories in collection
+    function (callback) {
       // arg1 now equals 'one' and arg2 now equals 'two'
       async.each(categoriesList, function (data, cb_each) {
         const category = new Category(data);
@@ -51,12 +54,13 @@ export const postItem = (req: Request, res: Response, next: NextFunction) => {
           }
           else {
             categories.push(category);
-            callback(null, 'one');
+            callback(null);
           }
         });
       });
     },
-    function (arg1, callback) {
+    // Insert Item in collection
+    function (callback) {
       const item: IItem = new Item({
         "title": req.body.title,
         "description": req.body.description,
@@ -77,75 +81,10 @@ export const postItem = (req: Request, res: Response, next: NextFunction) => {
     if (err) {
       res.status(406).send({ "error": err });
     } else {
-      res.status(200).send(result );
+      res.status(200).send(result);
     }
   });
 }
-  // waterfall([
-  //   function (callback) {
-  //     var allergensList = req.body.allergens;
-  //     for (var i = 0; i < allergensList.length; i++) {
-  //       var element = allergensList[i];
-
-
-  //     }
-  //     console.log(allergensList); 
-  //     callback(null, 'one', 'two');
-  //   },
-  //   function (arg1, arg2, callback) {
-  //     // arg1 now equals 'one' and arg2 now equals 'two'
-  //     callback(null, 'three');
-  //   },
-  //   function (arg1, callback) {
-  //     // arg1 now equals 'three'
-  //     callback(null, 'done');
-  //   }
-  // ], function (err, result) {
-  //   // result now equals 'done'
-  //   res.send(200);
-  // });
-  // var errors: Array<string> = [];
-  // const item: IItem = new Item({
-  //   "title": req.body.title,
-  //   "description": req.body.description,
-  //   "allergens": req.body.allergens.map((data: any) => {
-  //     const allergen = new Allergen(data);
-  //     allergen.save((err: mongoose.Error) => {
-  //       if (err) {
-  //         errors.push(err.message);
-  //       }
-  //     });
-
-  //     return allergen;
-  //   }),
-  //   "categories": req.body.categories.map((data: any) => {
-  //     const category = new Category(data);
-
-  //     category.save((err: mongoose.Error) => {
-  //       if (err) {
-  //         res.status(406).send({ message: errors });
-  //         return null;
-  //       }
-  //     });
-
-  //     return category;
-  //   })
-  // });
-  // item.save((err: mongoose.Error) => {
-  //   if (err) {
-  //     errors.push(err.message);
-  //   }
-  //   else {
-  //     if (errors.length != 0) {
-  //       console.log(errors);
-  //       res.status(406).send({ message: errors });
-  //     } else {
-  //       res.status(201).send(item);
-  //     }
-  //   }
-  // });
-
-// };
 
 export const publishItem = (req: Request, res: Response) => {
   const errors: Array<string> = [];
@@ -164,7 +103,7 @@ export const publishItem = (req: Request, res: Response) => {
         if (err) {
           errors.push(err.message);
         }
-      }).then;
+      });
 
       if (errors.length != 0) {
         console.log(errors);
