@@ -10,11 +10,12 @@ import * as mongoose from "mongoose";
 
 export const getItems = (req: Request, res: Response) => {
   const title = req.params.title;
-  Item.find({ title: new RegExp(title, "i") })
-    .limit(10)
-    .exec()
-    .then((items: Array<IItem>) => {
-      res.jsonp(items);
+  Item.find({}, function (err: mongoose.Error, items: IItem[]) {
+        if (err || !items) {
+            res.status(400).send({ message: "Can't find any items" });
+        } else {
+            res.send(items);
+        }
     });
 };
 
