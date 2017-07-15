@@ -4,3 +4,5 @@ import { IPublishedItem } from "../interfaces/IPublishedItem";
 import { PublishedItem } from "../models/PublishedItemModel";
 import { Request, Response, NextFunction } from "express";
 import * as mongoose from "mongoose";
+const async = require('async');
+

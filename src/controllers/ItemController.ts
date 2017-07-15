@@ -5,7 +5,7 @@ import { PublishedItem } from "../models/PublishedItemModel";
 import { IItem } from "../interfaces/IItem";
 import { IPublishedItem } from "../interfaces/IPublishedItem";
 import { getUserIdFromJwt } from "./UsersController";
-import { Request, Response, NextFunction } from "express";
+import { Request, Response} from "express";
 import * as mongoose from "mongoose";
 const async = require('async');
 // const each = require('async/each');
@@ -22,7 +22,7 @@ export const getItems = (req: Request, res: Response) => {
 };
 
 // This can be broken down into separate request in the future
-export const postItem = (req: Request, res: Response, next: NextFunction) => {
+export const postItem = (req: Request, res: Response) => {
   var allergensList = req.body.allergens;
   var categoriesList = req.body.categories;
   var categories = [];
