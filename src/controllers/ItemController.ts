@@ -20,13 +20,16 @@ export const getItems = (req: Request, res: Response) => {
       searchParams[key] = new RegExp(req.query[key], "i");
     });
   }
-  Item.find(searchParams, function (err: mongoose.Error, items: IItem[]) {
-    if (err || !items) {
-      res.status(400).send({ message: "Can't find any items" });
-    } else {
-      res.send(items);
-    }
-  });
+  Item.find(searchParams)
+    .populate("allergens")
+    .populate("categories")
+    .exec(function (err: mongoose.Error, items: IItem[]) {
+      if (err || !items) {
+        res.status(400).send({ message: "Can't find any items" });
+      } else {
+        res.send(items);
+      }
+    });
 };
 
 export const getPublishedItems = (req: Request, res: Response) => {
