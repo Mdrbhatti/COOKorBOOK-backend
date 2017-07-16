@@ -10,7 +10,15 @@ import * as mongoose from "mongoose";
 const async = require('async');
 
 export const getItems = (req: Request, res: Response) => {
-  Item.find({}, function (err: mongoose.Error, items: IItem[]) {
+  const searchParams = {};
+  if (Object.keys(req.query).length == 0) {
+    console.log("No key queries - simple retrieval");
+  } else {
+    Object.keys(req.query).forEach((key) => {
+      searchParams[key] = new RegExp(req.query[key], "i");
+    });
+  }
+  Item.find(searchParams, function (err: mongoose.Error, items: IItem[]) {
     if (err || !items) {
       res.status(400).send({ message: "Can't find any items" });
     } else {
