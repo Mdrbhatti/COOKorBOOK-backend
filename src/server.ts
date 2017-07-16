@@ -92,6 +92,7 @@ app.use(function (req, res, next) {
 });
 
 // Define all routes here
+app.use("/images", express.static("images"));
 app.post("/register", userController.postRegister);
 app.post("/login", userController.postLogin);
 app.put("/users/:id", passport.authenticate("jwt", { session: false }), userController.putUser);
