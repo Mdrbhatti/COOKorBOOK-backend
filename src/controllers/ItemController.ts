@@ -1,7 +1,9 @@
 import { Item } from "../models/ItemModel";
 import { IItem } from "../interfaces/IItem";
 import { Allergen } from "../models/AllergenModel";
+import { IAllergen } from "../interfaces/IAllergen";
 import { Category } from "../models/CategoryModel";
+import { ICategory } from "../interfaces/ICategory";
 import { PublishedItem } from "../models/PublishedItemModel";
 import { IPublishedItem } from "../interfaces/IPublishedItem";
 import { getUserIdFromJwt } from "./UsersController";
@@ -56,31 +58,58 @@ export const postItem = (req: Request, res: Response) => {
     // Insert allergens in collection
     function (callback) {
       async.each(allergensList, function (data, cb_each) {
-        const allergen = new Allergen(data);
-        allergen.save((err: mongoose.Error) => {
-          if (err) {
-            callback(err.message);
-          }
-          else {
+        Allergen.findOne({ title: data.title }, (err: mongoose.Error, allergen: IAllergen) => {
+          if (err || !allergen) {
+            allergen = new Allergen(data);
+            allergen.save((err: mongoose.Error) => {
+              if (err) {
+                console.log(err.message);
+                cb_each(err.message);
+              } else {
+                allergens.push(allergen);
+                cb_each(null);
+              }
+            });
+          } else {
             allergens.push(allergen);
-            callback(null);
+            cb_each(null);
           }
         });
+      }, function (err) {
+        if (err) {
+          callback(err.message);
+        } else {
+          callback(null);
+        }
       });
     },
     // Insert categories in collection
     function (callback) {
       async.each(categoriesList, function (data, cb_each) {
-        const category = new Category(data);
-        category.save((err: mongoose.Error) => {
-          if (err) {
-            callback(err.message);
-          }
-          else {
+        Category.findOne({ title: data.title }, (err: mongoose.Error, category: ICategory) => {
+          if (err || !category) {
+            //category doesn't exist - create it
+            category = new Category(data);
+            category.save((err: mongoose.Error) => {
+              if (err) {
+                console.log(err.message)
+                cb_each(err.message);
+              } else {
+                categories.push(category);
+                cb_each(null);
+              }
+            });
+          } else {
             categories.push(category);
-            callback(null);
+            cb_each(null);
           }
         });
+      }, function (err) {
+        if (err) {
+          callback(err.message);
+        } else {
+          callback(null);
+        }
       });
     },
     // Insert Item in collection
