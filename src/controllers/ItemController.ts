@@ -161,7 +161,7 @@ export const getPublishedItemsForSeller = (req: Request, res: Response) => {
 
 
 
-  PublishedItem.find({"seller": getUserIdFromJwt(req)}, {"servings": 1, "price": 1, "item.title": 1, "seller.username": 1}, function (err: mongoose.Error, items: IPublishedItem[]) {
+  PublishedItem.find({"seller": getUserIdFromJwt(req)}, 'price servings item.title', function (err: mongoose.Error, items: IPublishedItem[]) {
     if (err || items.length == 0) {
       res.status(400).send({ message: "Can't find any published items" });
     } else {
