@@ -106,7 +106,7 @@ export let getUsers = (req: Request, res: Response, next: NextFunction) => {
     });
   }
   User.find(searchParams, function (err: mongoose.Error, users: IUser[]) {
-    if (err || !users) {
+    if (err || users.length == 0) {
       res.status(400).send({ message: "Can't find any user" });
     } else {
       res.send(users);

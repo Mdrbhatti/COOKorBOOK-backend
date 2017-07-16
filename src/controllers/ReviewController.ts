@@ -22,7 +22,7 @@ export const getReviews = (req: Request, res: Response) => {
     });
   }
   Review.find(searchParams, function (err: mongoose.Error, reviews: IReview[]) {
-    if (err || !reviews) {
+    if (err || reviews.length == 0) {
       res.status(400).send({ message: "Can't find any order" });
     } else {
       res.send(reviews);

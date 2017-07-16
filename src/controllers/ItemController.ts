@@ -11,7 +11,7 @@ const async = require('async');
 
 export const getItems = (req: Request, res: Response) => {
   Item.find({}, function (err: mongoose.Error, items: IItem[]) {
-    if (err || !items) {
+    if (err || items.length == 0) {
       res.status(400).send({ message: "Can't find any items" });
     } else {
       res.send(items);
@@ -21,7 +21,7 @@ export const getItems = (req: Request, res: Response) => {
 
 export const getPublishedItems = (req: Request, res: Response) => {
   PublishedItem.find({}, function (err: mongoose.Error, items: IPublishedItem[]) {
-    if (err || !items) {
+    if (err || items.length == 0) {
       res.status(400).send({ message: "Can't find any published items" });
     } else {
       res.send(items);
