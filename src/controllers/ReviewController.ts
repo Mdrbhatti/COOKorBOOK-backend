@@ -34,7 +34,7 @@ export const postReview = (req: Request, res: Response) => {
             callback("User doesn't exist");
           }
           else {
-                callback(null, user);
+            callback(null, user);
           }
         });
     },
@@ -62,4 +62,25 @@ export const postReview = (req: Request, res: Response) => {
         res.status(200).send(result);
       }
     });
+}
+
+export const putReview = (req: Request, res: Response) => {
+  Review.findOneAndUpdate({ _id: req.params.id }, req.body, function (err: mongoose.Error, review: IReview) {
+    if (err || !review) {
+      res.status(400).send({ message: "Can't find review to update" });
+    } else {
+      res.send(review);
+    }
+  });
+}
+
+
+export const deleteReview = (req: Request, res: Response) => {
+  Review.findOneAndRemove({ _id: req.params.id }, req.body, function (err: mongoose.Error) {
+    if (err) {
+      res.status(400).send({ message: "Review doesn't exist" });
+    } else {
+      res.status(200).send({});
+    }
+  });
 }

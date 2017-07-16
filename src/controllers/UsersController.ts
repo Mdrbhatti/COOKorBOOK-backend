@@ -13,79 +13,79 @@ const moment = require("moment");
 const _ = require("underscore");
 const request = require("express-validator");
 
-export function getUserIdFromJwt (req: Request): string {
-    const jwtToken = req.get("Authorization").slice(4);
-    const userId: string = (<any>jwt.decode(jwtToken)).id;
-    return userId;
+export function getUserIdFromJwt(req: Request): string {
+  const jwtToken = req.get("Authorization").slice(4);
+  const userId: string = (<any>jwt.decode(jwtToken)).id;
+  return userId;
 }
 
 export let postRegister = (req: Request, res: Response, next: NextFunction) => {
-    req.assert("email", "Email is not valid").isEmail();
-    req.assert("userType", "User must have a type").isLength({ min: 4});
-    req.assert("password", "Password must be at least 4 characters long").isLength({ min: 4});
-    req.assert("username", "Username must be at least 4 characters long").isLength({ min: 4});
-    const errors = req.validationErrors();
-    // respond with errors
-    if (errors) {
-        res.status(400).send(errors);
-        return;
-    }
+  req.assert("email", "Email is not valid").isEmail();
+  req.assert("userType", "User must have a type").isLength({ min: 4 });
+  req.assert("password", "Password must be at least 4 characters long").isLength({ min: 4 });
+  req.assert("username", "Username must be at least 4 characters long").isLength({ min: 4 });
+  const errors = req.validationErrors();
+  // respond with errors
+  if (errors) {
+    res.status(400).send(errors);
+    return;
+  }
 
-    const user: IUser = new User(_.extend(req.body, { lastLogin: new Date(), createdOn: new Date() }));
-    user.save(function (err: mongoose.Error) {
-        if (err) {
-            res.status(400).send({ message: "Username or email already exists" });
-        }
-        else {
-            // Return token
-            const payload = { id: user._id };
-            const token = jwt.sign(payload, process.env.SESSION_SECRET);
-            res.json({ message: "ok", token: token });
-        }
-    });
+  const user: IUser = new User(_.extend(req.body, { lastLogin: new Date(), createdOn: new Date() }));
+  user.save(function (err: mongoose.Error) {
+    if (err) {
+      res.status(400).send({ message: "Username or email already exists" });
+    }
+    else {
+      // Return token
+      const payload = { id: user._id };
+      const token = jwt.sign(payload, process.env.SESSION_SECRET);
+      res.json({ message: "ok", token: token });
+    }
+  });
 };
 
 export let postLogin = (req: Request, res: Response, next: NextFunction) => {
-    User.findOne({ username: req.body.username }, function (err: mongoose.Error, user: IUser) {
-        if (err || !user) {
-            res.status(400).send({ message: "Invalid username or password" });
+  User.findOne({ username: req.body.username }, function (err: mongoose.Error, user: IUser) {
+    if (err || !user) {
+      res.status(400).send({ message: "Invalid username or password" });
+    }
+    else {
+      user.comparePassword(req.body.password, function (err: any, isMatch: any) {
+        if (isMatch) {
+          const payload = { id: user._id };
+          const token = jwt.sign(payload, process.env.SESSION_SECRET);
+          res.json({ message: "ok", token: token });
+          user.lastLogin = new Date();
+          user.save();
         }
         else {
-            user.comparePassword(req.body.password, function (err: any, isMatch: any) {
-                if (isMatch) {
-                    const payload = { id: user._id };
-                    const token = jwt.sign(payload, process.env.SESSION_SECRET);
-                    res.json({ message: "ok", token: token });
-                    user.lastLogin = new Date();
-                    user.save();
-                }
-                else {
-                    res.status(400).send({ message: "Invalid username or password" });
-                }
-                // Some funky shit
-                return undefined;
-            });
+          res.status(400).send({ message: "Invalid username or password" });
         }
-    });
+        // Some funky shit
+        return undefined;
+      });
+    }
+  });
 };
 
 export let putUser = (req: Request, res: Response, next: NextFunction) => {
-    // Only a user can update his account (while logged in)
-    User.findOneAndUpdate({ _id: getUserIdFromJwt(req) }, req.body, function (err: mongoose.Error, user: IUser) {
-        if (err || !user) {
-            res.status(400).send({ message: "Can't find user to update" });
-        } else {
-            res.send(user);
-        }
-    });
+  // Only a user can update his account (while logged in)
+  User.findOneAndUpdate({ _id: req.params.id }, req.body, function (err: mongoose.Error, user: IUser) {
+    if (err || !user) {
+      res.status(400).send({ message: "Can't find user to update" });
+    } else {
+      res.send(user);
+    }
+  });
 };
 
 export let getUsers = (req: Request, res: Response, next: NextFunction) => {
-    User.find({}, function (err: mongoose.Error, users: IUser[]) {
-        if (err || !users) {
-            res.status(400).send({ message: "Can't find user" });
-        } else {
-            res.send(users);
-        }
-    });
+  User.find({}, function (err: mongoose.Error, users: IUser[]) {
+    if (err || !users) {
+      res.status(400).send({ message: "Can't find user" });
+    } else {
+      res.send(users);
+    }
+  });
 };
