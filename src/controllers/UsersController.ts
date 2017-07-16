@@ -63,7 +63,7 @@ export let postLogin = (req: Request, res: Response, next: NextFunction) => {
         if (isMatch) {
           const payload = { id: user._id };
           const token = jwt.sign(payload, process.env.SESSION_SECRET);
-          res.json({ message: "ok", token: token });
+          res.json({ message: "ok", token: token, userType: user.userType });
           user.lastLogin = new Date();
           user.save();
         }
