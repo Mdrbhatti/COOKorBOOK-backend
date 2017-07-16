@@ -80,12 +80,12 @@ export let putUser = (req: Request, res: Response, next: NextFunction) => {
     });
 };
 
-export let getUser = (req: Request, res: Response, next: NextFunction) => {
-    User.findOne({ username: req.headers.username }, function (err: mongoose.Error, user: IUser) {
-        if (err || !user) {
+export let getUsers = (req: Request, res: Response, next: NextFunction) => {
+    User.find({}, function (err: mongoose.Error, users: IUser[]) {
+        if (err || !users) {
             res.status(400).send({ message: "Can't find user" });
         } else {
-            res.send(user);
+            res.send(users);
         }
     });
 };

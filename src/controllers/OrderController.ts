@@ -11,11 +11,11 @@ const async = require('async');
 
 export const getOrders = (req: Request, res: Response) => {
   const title = req.params.title;
-  Order.find({}, function (err: mongoose.Error, order: IOrder[]) {
-    if (err || !order) {
-      res.status(400).send({ message: "Can't find any order" });
+  Order.find({}, function (err: mongoose.Error, orders: IOrder[]) {
+    if (err || !orders) {
+      res.status(400).send({ message: "Can't find any orders" });
     } else {
-      res.send(order);
+      res.send(orders);
     }
   });
 };
