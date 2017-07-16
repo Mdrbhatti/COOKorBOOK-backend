@@ -6,6 +6,8 @@ import { IItem } from "../interfaces/IItem";
 import { IPublishedItem } from "../interfaces/IPublishedItem";
 import { Request, Response } from "express";
 import * as mongoose from "mongoose";
+import {User} from "../models/UserModel";
+import {error} from "util";
 
 export const getItems = (req: Request, res: Response) => {
   const title = req.params.title;
@@ -19,6 +21,8 @@ export const getItems = (req: Request, res: Response) => {
 
 export const postItem = (req: Request, res: Response) => {
   const errors: Array<string> = [];
+  console.log(req.body.title);
+  console.log(req.body.description);
   const item: IItem = new Item({
     "title": req.body.title,
     "description": req.body.description,
@@ -45,6 +49,7 @@ export const postItem = (req: Request, res: Response) => {
       return category;
     })
   });
+
   if (errors) {
     res.status(406).send({ message: errors });
   } else {
@@ -61,7 +66,7 @@ export const publishItem = (req: Request, res: Response) => {
         "time": req.body.time,
         "servings": req.body.servings,
         "price": req.body.price,
-        "seller": req.body,
+        "seller": req.body.seller,
         "item": item
       });
 
@@ -78,3 +83,25 @@ export const publishItem = (req: Request, res: Response) => {
       }
     });
 };
+
+export const getPublishedItemsForSeller = (req: Request, res: Response) => {
+  const errors: Array<string> =[];
+
+  PublishedItem.find({"seller.username": req.params.seller})
+      .limit(10)
+      .exec()
+      .then((publishedItems: Array<IPublishedItem>) => {
+    res.jsonp(publishedItems);
+      });
+}
+
+export const updatePublishedItemsForSeller = (req: Request, res: Response) => {
+  const errors: Array<string> =[];
+
+  PublishedItem.findOneAndUpdate({"seller.username": req.body.seller, "item.title": req.body.item.title}, {"servings": req.body.servings}, function (err: mongoose.Error) {
+    if (err) {
+      res.status(400).send({ message: "Can't update." });
+    }
+
+  });
+}

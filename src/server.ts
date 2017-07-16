@@ -93,6 +93,7 @@ app.get("/user", passport.authenticate("jwt", { session: false }), userControlle
 app.post("/items/:id/publish", itemController.publishItem);
 app.get("/items/:title?", itemController.getItems); // auto-complete functionality
 app.post("/items", itemController.postItem);
+app.get("/items/manage/:seller?", itemController.getPublishedItemsForSeller)
 
 // Disable in prodcution
 app.use(errorHandler());
