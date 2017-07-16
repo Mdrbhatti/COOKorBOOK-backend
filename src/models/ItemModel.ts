@@ -5,6 +5,7 @@ import { IItem } from "../interfaces/IItem";
 export const itemSchema = new mongoose.Schema({
   title: { type: String, required: true},
   description: { type: String },
+  image: { type: mongoose.Schema.Types.ObjectId, ref: "Image" },
   allergens: [{ type: mongoose.Schema.Types.ObjectId, ref: "Allergen" }],
   categories: [{ type: mongoose.Schema.Types.ObjectId, ref: "Category" }]
 });

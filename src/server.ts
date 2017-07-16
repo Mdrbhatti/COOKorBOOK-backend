@@ -17,7 +17,9 @@ const jwt = require("jsonwebtoken");
 import { User } from "./models/UserModel";
 import { IUser } from "./interfaces/IUser";
 import { Request, Response, NextFunction } from "express";
+import fileUpload = require("express-fileupload");
 import expressValidator = require("express-validator");
+
 
 mongoose.Promise = global.Promise;
 
@@ -41,7 +43,7 @@ app.use(compression());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(expressValidator());
-
+app.use(fileUpload());
 app.use(session({
   resave: true,
   saveUninitialized: true,
@@ -96,8 +98,8 @@ app.put("/users/:id", passport.authenticate("jwt", { session: false }), userCont
 app.get("/users", passport.authenticate("jwt", { session: false }), userController.getUsers);
 app.post("/items/:id/publish", passport.authenticate("jwt", { session: false }), itemController.publishItem);
 app.get("/items/published", passport.authenticate("jwt", { session: false }), itemController.getPublishedItems);
-app.get("/items", passport.authenticate("jwt", { session: false }), itemController.getItems);
-app.post("/items", passport.authenticate("jwt", { session: false }), itemController.postItem);
+app.get("/items", /*passport.authenticate("jwt", { session: false }),*/ itemController.getItems);
+app.post("/items", /*passport.authenticate("jwt", { session: false }),*/ itemController.postItem);
 app.post("/items/:id/order", passport.authenticate("jwt", { session: false }), orderController.orderItem);
 app.get("/orders", passport.authenticate("jwt", { session: false }), orderController.getOrders);
 app.post("/users/:id/review", passport.authenticate("jwt", { session: false }), reviewController.postReview);

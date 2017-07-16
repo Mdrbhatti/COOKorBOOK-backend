@@ -4,12 +4,19 @@ import { Allergen } from "../models/AllergenModel";
 import { IAllergen } from "../interfaces/IAllergen";
 import { Category } from "../models/CategoryModel";
 import { ICategory } from "../interfaces/ICategory";
+import { Image } from "../models/ImageModel";
+import { IImage } from "../interfaces/IImage";
 import { PublishedItem } from "../models/PublishedItemModel";
 import { IPublishedItem } from "../interfaces/IPublishedItem";
 import { getUserIdFromJwt } from "./UsersController";
 import { Request, Response } from "express";
 import * as mongoose from "mongoose";
 const async = require('async');
+const unf = require('unique-file-name');
+
+const namer = unf({
+  format: '%4Y-%M-%D/%16b_%6r%8e'
+});
 
 export const getItems = (req: Request, res: Response) => {
   const searchParams = {};
@@ -23,6 +30,7 @@ export const getItems = (req: Request, res: Response) => {
   Item.find(searchParams)
     .populate("allergens")
     .populate("categories")
+    .populate("image")
     .exec(function (err: mongoose.Error, items: IItem[]) {
       if (err || !items) {
         res.status(400).send({ message: "Can't find any items" });
@@ -43,7 +51,7 @@ export const getPublishedItems = (req: Request, res: Response) => {
 };
 
 // This can be broken down into separate request in the future
-export const postItem = (req: Request, res: Response) => {
+export const postItem = (req: any, res: Response) => {
   req.assert("title", "Title should be of length 10-255 chars").isLength({ min: 5, max: 255 });
   req.assert("description", "Description length 25-25556 chars").isLength({ min: 5, max: 25556 });
   const errors = req.validationErrors();
@@ -52,11 +60,12 @@ export const postItem = (req: Request, res: Response) => {
     res.status(400).send(errors);
     return;
   }
-  var allergensList = req.body.allergens;
-  var categoriesList = req.body.categories;
+  console.log(req.body.allergens);
+  var allergensList = JSON.parse(req.body.allergens);
+  var categoriesList = JSON.parse(req.body.categories);
   var categories = [];
   var allergens = [];
-
+  let img: IImage = new Image();
   async.waterfall([
     // Insert allergens in collection
     function (callback) {
@@ -66,7 +75,6 @@ export const postItem = (req: Request, res: Response) => {
             allergen = new Allergen(data);
             allergen.save((err: mongoose.Error) => {
               if (err) {
-                console.log(err.message);
                 cb_each(err.message);
               } else {
                 allergens.push(allergen);
@@ -95,7 +103,6 @@ export const postItem = (req: Request, res: Response) => {
             category = new Category(data);
             category.save((err: mongoose.Error) => {
               if (err) {
-                console.log(err.message)
                 cb_each(err.message);
               } else {
                 categories.push(category);
@@ -115,13 +122,45 @@ export const postItem = (req: Request, res: Response) => {
         }
       });
     },
+    // save image
+    function (callback) {
+      if (req.files) {
+        const image = req.files.image;
+        namer(image.name, function (err, uniquePath) {
+          if (err) {
+            callback(err.message);
+          } else {
+            image.mv(uniquePath, function (err: any) { // move file to unique slot
+              if (err) {
+                callback(err.message);
+              } else {
+                console.log(`File moved to ${uniquePath}, saving to db`);
+                img.path = uniquePath;
+                img.contentType = image.mimetype;
+
+                img.save((err: mongoose.Error) => {
+                  if (err) {
+                    callback(err.message);
+                  } else {
+                    callback(null);
+                  }
+                });
+              }
+            });
+          }
+          });
+      } else {
+        callback(null);
+      }
+    },
     // Insert Item in collection
     function (callback) {
       const item: IItem = new Item({
         "title": req.body.title,
         "description": req.body.description,
         "allergens": allergens,
-        "categories": categories
+        "categories": categories,
+        "image": img
       });
       item.save((err: mongoose.Error) => {
         if (err) {
