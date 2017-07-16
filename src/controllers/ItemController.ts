@@ -10,7 +10,6 @@ import * as mongoose from "mongoose";
 const async = require('async');
 
 export const getItems = (req: Request, res: Response) => {
-  const title = req.params.title;
   Item.find({}, function (err: mongoose.Error, items: IItem[]) {
     if (err || !items) {
       res.status(400).send({ message: "Can't find any items" });
@@ -20,8 +19,26 @@ export const getItems = (req: Request, res: Response) => {
   });
 };
 
+export const getPublishedItems = (req: Request, res: Response) => {
+  PublishedItem.find({}, function (err: mongoose.Error, items: IPublishedItem[]) {
+    if (err || !items) {
+      res.status(400).send({ message: "Can't find any published items" });
+    } else {
+      res.send(items);
+    }
+  });
+};
+
 // This can be broken down into separate request in the future
 export const postItem = (req: Request, res: Response) => {
+  req.assert("title", "Title should be of length 10-255 chars").isLength({ min: 5, max: 255 });
+  req.assert("description", "Description length 25-25556 chars").isLength({ min: 5, max: 25556 });
+  const errors = req.validationErrors();
+  // respond with errors
+  if (errors) {
+    res.status(400).send(errors);
+    return;
+  }
   var allergensList = req.body.allergens;
   var categoriesList = req.body.categories;
   var categories = [];
@@ -86,6 +103,15 @@ export const postItem = (req: Request, res: Response) => {
 }
 
 export const publishItem = (req: Request, res: Response) => {
+  req.assert("id", "Invalid ID").isLength({ min: 24, max: 24 });
+  req.assert("time", "Invalid date format").isISO8601();
+  req.assert("servings", "Servings should be 1 or more").isInt({ min: 1 });
+  const errors = req.validationErrors();
+  // respond with errors
+  if (errors) {
+    res.status(400).send(errors);
+    return;
+  }
   async.waterfall([
     // Search for item
     function (callback) {
