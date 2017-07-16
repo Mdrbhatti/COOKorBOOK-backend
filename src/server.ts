@@ -11,6 +11,8 @@ import * as bodyParser from "body-parser";
 import * as passport from "passport";
 import * as userController from "./controllers/UsersController";
 import * as itemController from "./controllers/ItemController";
+import * as orderController from "./controllers/OrderController";
+import * as reviewController from "./controllers/ReviewController";
 const jwt = require("jsonwebtoken");
 import { User } from "./models/UserModel";
 import { IUser } from "./interfaces/IUser";
@@ -90,12 +92,18 @@ app.use(function (req, res, next) {
 // Define all routes here
 app.post("/register", userController.postRegister);
 app.post("/login", userController.postLogin);
-app.put("/user", passport.authenticate("jwt", { session: false }), userController.putUser);
-app.get("/user", passport.authenticate("jwt", { session: false }), userController.getUser);
-app.post("/items/:id/publish", itemController.publishItem);
-app.get("/items/:title?", itemController.getItems); // auto-complete functionality
-app.post("/items", itemController.postItem);
-
+app.put("/users/:id", passport.authenticate("jwt", { session: false }), userController.putUser);
+app.get("/users", passport.authenticate("jwt", { session: false }), userController.getUsers);
+app.post("/items/:id/publish", passport.authenticate("jwt", { session: false }), itemController.publishItem);
+// app.get("/items/:title?", itemController.getItems); // auto-complete functionality
+app.get("/items", passport.authenticate("jwt", { session: false }), itemController.getItems);
+app.post("/items", passport.authenticate("jwt", { session: false }), itemController.postItem);
+app.post("/items/:id/order", passport.authenticate("jwt", { session: false }), orderController.orderItem);
+app.get("/orders", passport.authenticate("jwt", { session: false }), orderController.getOrders);
+app.post("/users/:id/review", passport.authenticate("jwt", { session: false }), reviewController.postReview);
+app.get("/reviews", passport.authenticate("jwt", { session: false }), reviewController.getReviews);
+app.put("/reviews/:id", passport.authenticate("jwt", { session: false }), reviewController.putReview);
+app.delete("/reviews/:id", passport.authenticate("jwt", { session: false }), reviewController.deleteReview);
 // Disable in prodcution
 app.use(errorHandler());
 
