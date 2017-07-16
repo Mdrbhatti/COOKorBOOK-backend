@@ -13,8 +13,15 @@ import { Request, Response, NextFunction } from "express";
 import * as mongoose from "mongoose";
 const async = require('async');
 
+
 export const getReviews = (req: Request, res: Response) => {
-  Review.find({}, function (err: mongoose.Error, reviews: IReview[]) {
+  const searchParams = {};
+  if (Object.keys(req.query).length != 0) {
+    Object.keys(req.query).forEach((key) => {
+      searchParams[key] = req.query[key];
+    });
+  }
+  Review.find(searchParams, function (err: mongoose.Error, reviews: IReview[]) {
     if (err || !reviews) {
       res.status(400).send({ message: "Can't find any order" });
     } else {
@@ -22,6 +29,9 @@ export const getReviews = (req: Request, res: Response) => {
     }
   });
 };
+
+
+
 
 export const postReview = (req: Request, res: Response) => {
   req.assert("id", "Invalid ID").isLength({ min: 24, max: 24 });
