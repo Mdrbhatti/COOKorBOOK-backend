@@ -40,7 +40,7 @@ export let postRegister = (req: Request, res: Response, next: NextFunction) => {
       // Return token
       const payload = { id: user._id };
       const token = jwt.sign(payload, process.env.SESSION_SECRET);
-      res.json({ message: "ok", token: token });
+      res.json({ message: "ok", token: token, userType: user.userType, id: user._id });
     }
   });
 };
@@ -63,7 +63,7 @@ export let postLogin = (req: Request, res: Response, next: NextFunction) => {
         if (isMatch) {
           const payload = { id: user._id };
           const token = jwt.sign(payload, process.env.SESSION_SECRET);
-          res.json({ message: "ok", token: token });
+          res.json({ message: "ok", token: token, userType: user.userType, id: user._id });
           user.lastLogin = new Date();
           user.save();
         }
@@ -99,9 +99,15 @@ export let putUser = (req: Request, res: Response, next: NextFunction) => {
 };
 
 export let getUsers = (req: Request, res: Response, next: NextFunction) => {
-  User.find({}, function (err: mongoose.Error, users: IUser[]) {
-    if (err || !users) {
-      res.status(400).send({ message: "Can't find user" });
+  const searchParams = {};
+  if (Object.keys(req.query).length != 0) {
+    Object.keys(req.query).forEach((key) => {
+      searchParams[key] = req.query[key];
+    });
+  }
+  User.find(searchParams, function (err: mongoose.Error, users: IUser[]) {
+    if (err || users.length == 0) {
+      res.status(400).send({ message: "Can't find any user" });
     } else {
       res.send(users);
     }

@@ -11,7 +11,7 @@ const async = require('async');
 
 export const getOrders = (req: Request, res: Response) => {
   Order.find({}, function (err: mongoose.Error, orders: IOrder[]) {
-    if (err || !orders) {
+    if (err || orders.length == 0) {
       res.status(400).send({ message: "Can't find any orders" });
     } else {
       res.send(orders);
