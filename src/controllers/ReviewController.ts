@@ -30,9 +30,6 @@ export const getReviews = (req: Request, res: Response) => {
   });
 };
 
-
-
-
 export const postReview = (req: Request, res: Response) => {
   req.assert("id", "Invalid ID").isLength({ min: 24, max: 24 });
   req.assert("title", "Title should be of length 10-255 chars").isLength({ min: 5, max: 255 });
