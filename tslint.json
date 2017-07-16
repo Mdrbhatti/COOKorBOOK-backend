@@ -14,7 +14,7 @@
             "check-open-brace",
             "check-whitespace"
         ],
-        "no-var-keyword": true,
+        "no-var-keyword": false,
         "quotemark": [
             true,
             "double",
@@ -54,7 +54,6 @@
         "no-internal-module": true,
         "no-trailing-whitespace": true,
         "no-null-keyword": true,
-        "prefer-const": true,
         "jsdoc-format": true
     }
 }
