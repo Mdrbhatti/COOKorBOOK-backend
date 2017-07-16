@@ -46,6 +46,14 @@ export let postRegister = (req: Request, res: Response, next: NextFunction) => {
 };
 
 export let postLogin = (req: Request, res: Response, next: NextFunction) => {
+  req.assert("password", "Password must be at least 4 characters long").isLength({ min: 4 });
+  req.assert("username", "Username must be at least 4 characters long").isLength({ min: 4 });
+  const errors = req.validationErrors();
+  // respond with errors
+  if (errors) {
+    res.status(400).send(errors);
+    return;
+  }
   User.findOne({ username: req.body.username }, function (err: mongoose.Error, user: IUser) {
     if (err || !user) {
       res.status(400).send({ message: "Invalid username or password" });
@@ -70,6 +78,16 @@ export let postLogin = (req: Request, res: Response, next: NextFunction) => {
 };
 
 export let putUser = (req: Request, res: Response, next: NextFunction) => {
+  req.assert("email", "Email is not valid").isEmail();
+  req.assert("userType", "User must have a type").isLength({ min: 4 });
+  req.assert("password", "Password must be at least 4 characters long").isLength({ min: 4 });
+  req.assert("username", "Username must be at least 4 characters long").isLength({ min: 4 });
+  const errors = req.validationErrors();
+  // respond with errors
+  if (errors) {
+    res.status(400).send(errors);
+    return;
+  }
   // Only a user can update his account (while logged in)
   User.findOneAndUpdate({ _id: req.params.id }, req.body, function (err: mongoose.Error, user: IUser) {
     if (err || !user) {

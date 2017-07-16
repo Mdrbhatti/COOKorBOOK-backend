@@ -14,7 +14,6 @@ import * as mongoose from "mongoose";
 const async = require('async');
 
 export const getReviews = (req: Request, res: Response) => {
-  const title = req.params.title;
   Review.find({}, function (err: mongoose.Error, reviews: IReview[]) {
     if (err || !reviews) {
       res.status(400).send({ message: "Can't find any order" });
@@ -25,6 +24,16 @@ export const getReviews = (req: Request, res: Response) => {
 };
 
 export const postReview = (req: Request, res: Response) => {
+  req.assert("id", "Invalid ID").isLength({min: 24, max: 24});
+  req.assert("title", "Title should be of length 10-255 chars").isLength({min:5, max: 255});
+  req.assert("rating", "Rating should be int of range 0-5").isInt({min:0, max:5});
+  req.assert("description", "Description length 25-25556 chars").isLength({min:5, max: 25556});
+  const errors = req.validationErrors();
+  // respond with errors
+  if (errors) {
+    res.status(400).send(errors);
+    return;
+  }
   async.waterfall([
     // Search for reviewee
     function (callback) {
@@ -41,6 +50,7 @@ export const postReview = (req: Request, res: Response) => {
     // Save review
     function (user, callback) {
       const review: IReview = new Review({
+        "title": req.body.title,
         "rating": req.body.rating,
         "description": req.body.description,
         "buyer": getUserIdFromJwt(req),
@@ -80,7 +90,7 @@ export const deleteReview = (req: Request, res: Response) => {
     if (err) {
       res.status(400).send({ message: "Review doesn't exist" });
     } else {
-      res.status(200).send({});
+      res.status(200).send({"msg" : "Ok"});
     }
   });
 }
