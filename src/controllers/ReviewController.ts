@@ -24,10 +24,10 @@ export const getReviews = (req: Request, res: Response) => {
 };
 
 export const postReview = (req: Request, res: Response) => {
-  req.assert("id", "Invalid ID").isLength({min: 24, max: 24});
-  req.assert("title", "Title should be of length 10-255 chars").isLength({min:5, max: 255});
-  req.assert("rating", "Rating should be int of range 0-5").isInt({min:0, max:5});
-  req.assert("description", "Description length 25-25556 chars").isLength({min:5, max: 25556});
+  req.assert("id", "Invalid ID").isLength({ min: 24, max: 24 });
+  req.assert("title", "Title should be of length 10-255 chars").isLength({ min: 5, max: 255 });
+  req.assert("rating", "Rating should be int of range 0-5").isInt({ min: 0, max: 5 });
+  req.assert("description", "Description length 25-25556 chars").isLength({ min: 5, max: 25556 });
   const errors = req.validationErrors();
   // respond with errors
   if (errors) {
@@ -75,6 +75,12 @@ export const postReview = (req: Request, res: Response) => {
 }
 
 export const putReview = (req: Request, res: Response) => {
+  req.assert("id", "Invalid ID").isLength({ min: 24, max: 24 });
+  const errors = req.validationErrors();
+  if (errors) {
+    res.status(400).send(errors);
+    return;
+  }
   Review.findOneAndUpdate({ _id: req.params.id }, req.body, function (err: mongoose.Error, review: IReview) {
     if (err || !review) {
       res.status(400).send({ message: "Can't find review to update" });
@@ -86,11 +92,17 @@ export const putReview = (req: Request, res: Response) => {
 
 
 export const deleteReview = (req: Request, res: Response) => {
+  req.assert("id", "Invalid ID").isLength({ min: 24, max: 24 });
+  const errors = req.validationErrors();
+  if (errors) {
+    res.status(400).send(errors);
+    return;
+  }
   Review.findOneAndRemove({ _id: req.params.id }, req.body, function (err: mongoose.Error) {
     if (err) {
       res.status(400).send({ message: "Review doesn't exist" });
     } else {
-      res.status(200).send({"msg" : "Ok"});
+      res.status(200).send({ "msg": "Ok" });
     }
   });
 }
