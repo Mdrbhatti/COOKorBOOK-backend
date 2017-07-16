@@ -7,6 +7,7 @@ import { IPublishedItem } from "../interfaces/IPublishedItem";
 import { getUserIdFromJwt } from "./UsersController";
 import { Request, Response } from "express";
 import * as mongoose from "mongoose";
+import {User} from "../models/UserModel";
 const async = require('async');
 
 export const getItems = (req: Request, res: Response) => {
@@ -64,6 +65,7 @@ export const postItem = (req: Request, res: Response) => {
     function (callback) {
       async.each(categoriesList, function (data, cb_each) {
         const category = new Category(data);
+        console.log(category);
         category.save((err: mongoose.Error) => {
           if (err) {
             callback(err.message);
@@ -74,17 +76,17 @@ export const postItem = (req: Request, res: Response) => {
           }
         });
       });
-    },
-    // Insert Item in collection
-    function (callback) {
-      const item: IItem = new Item({
+},
+      // Insert Item in collection
+    function (callback){
+  const item: IItem = new Item({
         "title": req.body.title,
         "description": req.body.description,
         "allergens": allergens,
         "categories": categories
       });
-      item.save((err: mongoose.Error) => {
-        if (err) {
+      item.save((err: mongoose.Error)=> {
+  if (err) {
           callback(err.message);
         }
         else {
@@ -95,11 +97,11 @@ export const postItem = (req: Request, res: Response) => {
   ],
     function (err, result) {
       if (err) {
-        res.status(406).send({ "error": err });
-      } else {
-        res.status(200).send(result);
+    res.status(406).send({ "error": err });
+  } else {
+    res.status(200).send(result);
       }
-    });
+  });
 }
 
 export const publishItem = (req: Request, res: Response) => {
@@ -149,4 +151,34 @@ export const publishItem = (req: Request, res: Response) => {
         res.status(200).send(result);
       }
     });
+};
+
+export const getPublishedItemsForSeller = (req: Request, res: Response) => {
+  const errors: Array<string> =[];
+
+  // const user = User.findOne({"username": req.body.seller});
+  console.log(getUserIdFromJwt(req));
+
+
+
+  PublishedItem.find({"seller": getUserIdFromJwt(req)}).populate("item").exec( function (err: mongoose.Error, items: IPublishedItem[]) {
+    if (err || items.length == 0) {
+      res.status(400).send({ message: "Can't find any published items" });
+    } else {
+      res.send(items);
+    }
+  });
 }
+
+export const updatePublishedItemsForSeller = (req: Request, res: Response) => {
+  const errors: Array<string> =[];
+  PublishedItem.findOneAndUpdate({"seller": getUserIdFromJwt(req), "item": req.body.itemId}, {"servings": req.body.servings, "price": req.body.price}, function (err: mongoose.Error) {
+    if (err) {
+      res.status(400).send({ message: "Update failed." });
+    }
+    else{
+      res.status(200).send({message:"success"});
+    }
+  });
+}
+
