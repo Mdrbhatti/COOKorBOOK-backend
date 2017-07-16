@@ -13,9 +13,16 @@ import { Request, Response, NextFunction } from "express";
 import * as mongoose from "mongoose";
 const async = require('async');
 
+
 export const getReviews = (req: Request, res: Response) => {
-  Review.find({}, function (err: mongoose.Error, reviews: IReview[]) {
-    if (err || !reviews) {
+  const searchParams = {};
+  if (Object.keys(req.query).length != 0) {
+    Object.keys(req.query).forEach((key) => {
+      searchParams[key] = req.query[key];
+    });
+  }
+  Review.find(searchParams).populate("seller").populate("buyer").exec(function (err: mongoose.Error, reviews: IReview[]) {
+    if (err || reviews.length == 0) {
       res.status(400).send({ message: "Can't find any order" });
     } else {
       res.send(reviews);
@@ -26,7 +33,7 @@ export const getReviews = (req: Request, res: Response) => {
 export const postReview = (req: Request, res: Response) => {
   req.assert("id", "Invalid ID").isLength({ min: 24, max: 24 });
   req.assert("title", "Title should be of length 10-255 chars").isLength({ min: 5, max: 255 });
-  req.assert("rating", "Rating should be int of range 0-5").isInt({ min: 0, max: 5 });
+  req.assert("rating", "Rating should be int of range 1-5").isInt({ min: 1, max: 5 });
   req.assert("description", "Description length 25-25556 chars").isLength({ min: 5, max: 25556 });
   const errors = req.validationErrors();
   // respond with errors
