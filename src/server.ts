@@ -104,12 +104,8 @@ app.post("/users/:id/review", passport.authenticate("jwt", { session: false }), 
 app.get("/reviews", passport.authenticate("jwt", { session: false }), reviewController.getReviews);
 app.put("/reviews/:id", passport.authenticate("jwt", { session: false }), reviewController.putReview);
 app.delete("/reviews/:id", passport.authenticate("jwt", { session: false }), reviewController.deleteReview);
-app.put("/user", passport.authenticate("jwt", { session: false }), userController.putUser);
-app.get("/user", passport.authenticate("jwt", { session: false }), userController.getUser);
-app.post("/items/:id/publish", itemController.publishItem);
-app.get("/items/:title?", itemController.getItems); // auto-complete functionality
-app.post("/items", itemController.postItem);
-app.get("/items/manage/:seller?", itemController.getPublishedItemsForSeller)
+app.get("/items/manage/:seller?", passport.authenticate("jwt", { session: false }), itemController.getPublishedItemsForSeller);
+app.post("/items/manage", passport.authenticate("jwt", { session: false }), itemController.updatePublishedItemsForSeller);
 
 // Disable in prodcution
 app.use(errorHandler());

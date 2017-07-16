@@ -64,6 +64,7 @@ export const postItem = (req: Request, res: Response) => {
     function (callback) {
       async.each(categoriesList, function (data, cb_each) {
         const category = new Category(data);
+        console.log(category);
         category.save((err: mongoose.Error) => {
           if (err) {
             callback(err.message);
@@ -165,11 +166,10 @@ export const getPublishedItemsForSeller = (req: Request, res: Response) => {
 export const updatePublishedItemsForSeller = (req: Request, res: Response) => {
   const errors: Array<string> =[];
 
-  PublishedItem.findOneAndUpdate({"seller.username": req.body.seller, "item.title": req.body.item.title}, {"servings": req.body.servings}, function (err: mongoose.Error) {
+  PublishedItem.findOneAndUpdate({"seller.username": req.body.seller, "item.title": req.body.item.title}, {"servings": req.body.servings, "price": req.body.price}, function (err: mongoose.Error) {
     if (err) {
       res.status(400).send({ message: "Can't update." });
     }
-
   });
 }
 
