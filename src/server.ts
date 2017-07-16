@@ -106,6 +106,9 @@ app.post("/users/:id/review", passport.authenticate("jwt", { session: false }), 
 app.get("/reviews", passport.authenticate("jwt", { session: false }), reviewController.getReviews);
 app.put("/reviews/:id", passport.authenticate("jwt", { session: false }), reviewController.putReview);
 app.delete("/reviews/:id", passport.authenticate("jwt", { session: false }), reviewController.deleteReview);
+app.get("/items/manage/published", itemController.getPublishedItemsForSeller);
+app.post("/items/manage", passport.authenticate("jwt", { session: false }), itemController.updatePublishedItemsForSeller);
+
 // Disable in prodcution
 app.use(errorHandler());
 
