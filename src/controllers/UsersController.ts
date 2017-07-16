@@ -40,7 +40,7 @@ export let postRegister = (req: Request, res: Response, next: NextFunction) => {
       // Return token
       const payload = { id: user._id };
       const token = jwt.sign(payload, process.env.SESSION_SECRET);
-      res.json({ message: "ok", token: token });
+      res.json({ message: "ok", token: token, userType: user.userType });
     }
   });
 };
