@@ -11,11 +11,12 @@ import { IPublishedItem } from "../interfaces/IPublishedItem";
 import { getUserIdFromJwt } from "./UsersController";
 import { Request, Response } from "express";
 import * as mongoose from "mongoose";
-const async = require('async');
-const unf = require('unique-file-name');
+const fs = require("fs");
+const async = require("async");
+const unf = require("unique-file-name");
 
 const namer = unf({
-  format: '%4Y-%M-%D/%16b_%6r%8e'
+  format: "%4Y-%M-%D/%16b_%6r%8e"
 });
 
 export const getItems = (req: Request, res: Response) => {
@@ -50,6 +51,20 @@ export const getPublishedItems = (req: Request, res: Response) => {
   });
 };
 
+function decodeBase64Image(dataString) {
+  var matches = dataString.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/),
+    response = {};
+
+  if (matches.length !== 3) {
+    return new Error("Invalid input string");
+  }
+
+  response["type"] = matches[1];
+  response["data"] = new Buffer(matches[2], "base64");
+
+  return response;
+}
+
 // This can be broken down into separate request in the future
 export const postItem = (req: any, res: Response) => {
   req.assert("title", "Title should be of length 10-255 chars").isLength({ min: 5, max: 255 });
@@ -60,9 +75,9 @@ export const postItem = (req: any, res: Response) => {
     res.status(400).send(errors);
     return;
   }
-  console.log(req.body.allergens);
-  var allergensList = JSON.parse(req.body.allergens);
-  var categoriesList = JSON.parse(req.body.categories);
+
+  var allergensList = req.body.allergens;
+  var categoriesList = req.body.categories;
   var categories = [];
   var allergens = [];
   let img: IImage = new Image();
@@ -99,7 +114,7 @@ export const postItem = (req: any, res: Response) => {
       async.each(categoriesList, function (data, cb_each) {
         Category.findOne({ title: data.title }, (err: mongoose.Error, category: ICategory) => {
           if (err || !category) {
-            //category doesn't exist - create it
+            //category doesn"t exist - create it
             category = new Category(data);
             category.save((err: mongoose.Error) => {
               if (err) {
@@ -124,31 +139,31 @@ export const postItem = (req: any, res: Response) => {
     },
     // save image
     function (callback) {
-      if (req.files) {
-        const image = req.files.image;
-        namer(image.name, function (err, uniquePath) {
+      if (req.body.image !== "") {
+        const image = decodeBase64Image(req.body.image);
+        namer("food", function (err, uniquePath) {
           if (err) {
             callback(err.message);
           } else {
-            image.mv(uniquePath, function (err: any) { // move file to unique slot
+            console.log(`Writing file ${uniquePath}`);
+            fs.writeFile(uniquePath, image["data"], function (err: any) {
               if (err) {
+                console.log(err.message);
                 callback(err.message);
               } else {
-                console.log(`File moved to ${uniquePath}, saving to db`);
                 img.path = uniquePath;
-                img.contentType = image.mimetype;
-
+                img.contentType = image["type"];
                 img.save((err: mongoose.Error) => {
                   if (err) {
                     callback(err.message);
                   } else {
                     callback(null);
                   }
-                });
+                })
               }
-            });
+            })
           }
-          });
+        })
       } else {
         callback(null);
       }
