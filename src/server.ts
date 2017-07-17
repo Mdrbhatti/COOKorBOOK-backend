@@ -112,7 +112,7 @@ app.post("/items/manage", passport.authenticate("jwt", { session: false }), item
 // Disable in prodcution
 app.use(errorHandler());
 
-const server = app.listen(8000, "localhost", () => {
+const server = app.listen(8000, "0.0.0.0", () => {
   const { address, port } = server.address();
   console.log("Listening on http://localhost:" + port);
 });
