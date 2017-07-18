@@ -6,7 +6,7 @@ export interface IPublishedItem extends mongoose.Document {
   name: string;
   description: string;
   sellerComments: string;
-  pricePerPortion: string;
+  pricePerPortion: number;
   bulkPricing: boolean;
   image: string; 
   type: string;
@@ -16,6 +16,7 @@ export interface IPublishedItem extends mongoose.Document {
   addressCity: string;
   createdOn: Date;
   servings: number;
+  servingsRemaining: number;
   seller: IUser;
   pickupTime: string[];
   ingredients: string[];

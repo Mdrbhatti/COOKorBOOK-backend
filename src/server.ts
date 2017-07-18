@@ -103,9 +103,6 @@ app.get("/users", passport.authenticate("jwt", { session: false }), userControll
 // app.get("/items/published", passport.authenticate("jwt", { session: false }), itemController.getPublishedItems);
 app.get("/items", passport.authenticate("jwt", { session: false }), itemController.getItems);
 app.post("/items", passport.authenticate("jwt", { session: false }), itemController.postItem);
-// Order Routes
-app.post("/items/:id/order", passport.authenticate("jwt", { session: false }), orderController.orderItem);
-app.get("/orders", passport.authenticate("jwt", { session: false }), orderController.getOrders);
 // Reviews routes
 app.post("/users/:id/review", passport.authenticate("jwt", { session: false }), reviewController.postReview);
 app.get("/reviews", passport.authenticate("jwt", { session: false }), reviewController.getReviews);
@@ -116,7 +113,10 @@ app.get("/items/manage/published", passport.authenticate("jwt", { session: false
 app.post("/items/manage", passport.authenticate("jwt", { session: false }), itemController.updatePublishedItemsForSeller);
 // Actual route for published items:
 app.post("/v1/pitem", passport.authenticate("jwt", { session: false }), pItemController.postItem);
-
+app.get("/v1/pitem", passport.authenticate("jwt", { session: false }), pItemController.getItem);
+// Order Routes
+app.post("/pitem/:id/order", passport.authenticate("jwt", { session: false }), orderController.orderItem);
+app.get("/order", passport.authenticate("jwt", { session: false }), orderController.getOrders);
 
 // Disable in prodcution
 app.use(errorHandler());

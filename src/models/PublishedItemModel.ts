@@ -7,7 +7,7 @@ export const publishedItemSchema = new mongoose.Schema({
   name: { type: String, required: true },
   description: { type: String, required: true },
   sellerComments: { type: String, required: true },
-  pricePerPortion: { type: String, required: true },
+  pricePerPortion: { type: Number, required: true },
   bulkPricing: { type: Boolean, required: true },
   image: { type: String, required: true }, 
   type: { type: String, required: true }, //is vegan or not
@@ -17,6 +17,7 @@ export const publishedItemSchema = new mongoose.Schema({
   addressCity: { type: String, required: true },
   createdOn: { type: Date, required: true },
   servings: { type: Number, required: true },
+  servingsRemaining: { type: Number, required: true },
   seller: { type: mongoose.Schema.Types.ObjectId, "ref": "User", required: true },
   pickupTime: { type: [String], required: true },
   ingredients:{ type: [String], required: true },
