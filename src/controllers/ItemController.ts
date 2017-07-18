@@ -17,7 +17,8 @@ const async = require("async");
 const unf = require("unique-file-name");
 
 const namer = unf({
-  format: "%4Y-%M-%D/%16b_%6r%8e"
+  format: "%4Y-%M-%D/%16b_%6r%8e",
+  dir: "./images"
 });
 
 export const getItems = (req: Request, res: Response) => {
@@ -152,7 +153,9 @@ export const postItem = (req: any, res: Response) => {
                 console.log(err.message);
                 callback(err.message);
               } else {
-                img.path = uniquePath;
+                // reduce path to local
+                let idx = uniquePath.indexOf("images");
+                img.path = uniquePath.substr(idx, uniquePath.length - idx);
                 img.contentType = image["type"];
                 img.save((err: mongoose.Error) => {
                   if (err) {
