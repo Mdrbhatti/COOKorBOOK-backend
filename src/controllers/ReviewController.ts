@@ -97,7 +97,6 @@ export const putReview = (req: Request, res: Response) => {
   });
 }
 
-
 export const deleteReview = (req: Request, res: Response) => {
   req.assert("id", "Invalid ID").isLength({ min: 24, max: 24 });
   const errors = req.validationErrors();

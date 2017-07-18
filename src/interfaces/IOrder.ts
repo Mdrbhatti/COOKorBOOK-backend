@@ -4,10 +4,12 @@ import { IPublishedItem } from "./IPublishedItem";
 
 
 export interface IOrder extends mongoose.Document {
-  pickUptime: Date;
+  completed: boolean;
+  pickUptime: string;
   servings: number;
   buyer: IUser;
   publishedItem: IPublishedItem;
   buyerComments: String;
   createdOn: Date;
+  price: number;
 }

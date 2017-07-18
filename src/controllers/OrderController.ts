@@ -52,7 +52,7 @@ export const orderItem = (req: Request, res: Response) => {
     function (item: IPublishedItem, callback) {
       let orderServings = Number(req.body.servings);
       if (orderServings > item.servingsRemaining) {
-        callback('Not enough available serings');
+        callback('Not enough available servings');
       }
       else {
         item.servingsRemaining -= orderServings;
@@ -73,7 +73,9 @@ export const orderItem = (req: Request, res: Response) => {
         "buyer": getUserIdFromJwt(req),
         "publishedItem": item,
         "buyerComments": req.body.buyerComments,
-        "createdOn": new Date
+        "createdOn": new Date,
+        "completed": false,
+        "price": Number(req.body.price)
       });
       order.save((err: mongoose.Error) => {
         if (err) {

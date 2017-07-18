@@ -20,10 +20,7 @@ import { IUser } from "./interfaces/IUser";
 import { Request, Response, NextFunction } from "express";
 import fileUpload = require("express-fileupload");
 import expressValidator = require("express-validator");
-
-
 mongoose.Promise = global.Promise;
-
 const MongoStore = mongo(session);
 /**
  * Load environment variables from .env file, where API keys and passwords are configured.
@@ -41,7 +38,7 @@ const app = express();
 app.use(logger("dev"));
 // compress responses
 app.use(compression());
-app.use(bodyParser.json());
+app.use(bodyParser.json({limit: '1000mb'}));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(expressValidator());
 app.use(fileUpload());
@@ -115,8 +112,8 @@ app.post("/items/manage", passport.authenticate("jwt", { session: false }), item
 app.post("/v1/pitem", passport.authenticate("jwt", { session: false }), pItemController.postItem);
 app.get("/v1/pitem", passport.authenticate("jwt", { session: false }), pItemController.getItem);
 // Order Routes
-app.post("/pitem/:id/order", passport.authenticate("jwt", { session: false }), orderController.orderItem);
-app.get("/order", passport.authenticate("jwt", { session: false }), orderController.getOrders);
+app.post("/v1/pitem/:id/order", passport.authenticate("jwt", { session: false }), orderController.orderItem);
+app.get("/v1/order", passport.authenticate("jwt", { session: false }), orderController.getOrders);
 
 // Disable in prodcution
 app.use(errorHandler());
