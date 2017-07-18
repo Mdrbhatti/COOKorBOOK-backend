@@ -10,6 +10,8 @@ export const orderSchema = new mongoose.Schema({
   publishedItem: { type: mongoose.Schema.Types.ObjectId, ref: "PublishedItem", required: true },
   buyerComments: { type: String, required: true },
   createdOn: { type: Date, required: true },
+  completed: { type: Boolean, required: true},
+  price: { type: Number, required: true}
 });
 
 export const Order = mongoose.model<IOrder>("Order", orderSchema);
