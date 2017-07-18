@@ -99,15 +99,15 @@ app.put("/users/:id", passport.authenticate("jwt", { session: false }), userCont
 app.get("/users", passport.authenticate("jwt", { session: false }), userController.getUsers);
 app.post("/items/:id/publish", passport.authenticate("jwt", { session: false }), itemController.publishItem);
 app.get("/items/published", passport.authenticate("jwt", { session: false }), itemController.getPublishedItems);
-app.get("/items", /*passport.authenticate("jwt", { session: false }),*/ itemController.getItems);
-app.post("/items", /*passport.authenticate("jwt", { session: false }),*/ itemController.postItem);
+app.get("/items", passport.authenticate("jwt", { session: false }), itemController.getItems);
+app.post("/items", passport.authenticate("jwt", { session: false }), itemController.postItem);
 app.post("/items/:id/order", passport.authenticate("jwt", { session: false }), orderController.orderItem);
 app.get("/orders", passport.authenticate("jwt", { session: false }), orderController.getOrders);
 app.post("/users/:id/review", passport.authenticate("jwt", { session: false }), reviewController.postReview);
 app.get("/reviews", passport.authenticate("jwt", { session: false }), reviewController.getReviews);
 app.put("/reviews/:id", passport.authenticate("jwt", { session: false }), reviewController.putReview);
 app.delete("/reviews/:id", passport.authenticate("jwt", { session: false }), reviewController.deleteReview);
-app.get("/items/manage/published", itemController.getPublishedItemsForSeller);
+app.get("/items/manage/published", passport.authenticate("jwt", { session: false }), itemController.getPublishedItemsForSeller);
 app.post("/items/manage", passport.authenticate("jwt", { session: false }), itemController.updatePublishedItemsForSeller);
 
 // Disable in prodcution
