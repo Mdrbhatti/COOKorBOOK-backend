@@ -8,11 +8,17 @@ import * as mongoose from "mongoose";
 const async = require("async");
 const fs = require("fs");
 const unf = require("unique-file-name");
+const path = require('path');
 
 const namer = unf({
-  format: "%4Y-%M-%D/%16b_%6r%8e.png",
+  format: "%16b_%6r%8e.png",
   dir: "./images"
 });
+
+export const getImage = (req: Request, res: Response) => {
+  // get path und send file
+  res.sendFile(`${path.resolve()}/images/${req.params.src}`);
+};
 
 export const getItem = (req: Request, res: Response) => {
   const searchParams = {};
@@ -46,61 +52,64 @@ function decodeBase64Image(dataString) {
 }
 export const postItem = (req: Request, res: Response) => {
   const image = decodeBase64Image(req.body.image);
-  namer("food", function (err, uniquePath) {
-    if (err) {
-      res.status(400).send({ message: err.message });
-    } else {
-      console.log(`Writing file ${uniquePath}`);
-      fs.writeFile(uniquePath, image["data"], function (err: any) {
+  async.waterfall([
+    function (callback) {
+      namer("food", function (err, uniquePath) {
         if (err) {
-          console.log(err.message);
-          res.status(400).send({ message: err.message });
+          callback(err.message);
         } else {
-
-          // reduce path to local
-          // let idx = uniquePath.indexOf("images");
-          // let path = uniquePath.substr(idx, uniquePath.length - idx) + ".png";
-          console.log("Saved img path: " + uniquePath);
-          res.send({ msg: "ok" });
-          // img.contentType = image["type"];
-          // img.save((err: mongoose.Error) => {
-          //   if (err) {
-          //     callback(err.message);
-          //   } else {
-          //     callback(null);
-          //   }
-          // });
+          console.log(`Writing file ${uniquePath}`);
+          fs.writeFile(uniquePath, image["data"], function (err: any) {
+            if (err) {
+              callback(err.message);
+            } else {
+              console.log("Saved img path: " + path.basename(uniquePath));
+              // res.send({ msg: "ok" });
+              callback(null, path.basename(uniquePath));
+            }
+          });
+        }
+      });
+    },
+    function (imgName, callback) {
+      console.log(`http://127.0.0.1:8000/image/${imgName}`);
+          const pItem: IPublishedItem = new PublishedItem({
+          "name": req.body.name,
+          "description": req.body.description,
+          "sellerComments": req.body.sellerComments,
+          "pricePerPortion": Number(req.body.pricePerPortion),
+          "bulkPricing": req.body.bulkPricing,
+          "image" : `http://127.0.0.1:8000/image/${imgName}`,
+          "type": req.body.type,
+          "rating": Number(req.body.rating),
+          "addressStreet": req.body.addressStreet,
+          "addressPostalCode": req.body.addressPostalCode,
+          "addressCity": req.body.addressCity,
+          "createdOn": new Date(),
+          "servings": Number(req.body.servings),
+          "servingsRemaining": Number(req.body.servings),
+          "seller": getUserIdFromJwt(req),
+          "pickupTime": req.body.pickupTime,
+          "ingredients": req.body.ingredients,
+          "allergens": req.body.allergens,
+          "categories": req.body.categories
+      });
+      pItem.save((err: mongoose.Error) => {
+        if (err) {
+          res.status(406).send({ "error": err });
+        } else {
+          res.status(200).send(pItem);
         }
       });
     }
-  });
-  // const pItem: IPublishedItem = new PublishedItem({
-  //   "name": req.body.name,
-  //   "description": req.body.description,
-  //   "sellerComments": req.body.sellerComments,
-  //   "pricePerPortion": Number(req.body.pricePerPortion),
-  //   "bulkPricing": req.body.bulkPricing,
-  //   // "image": req.body.image,
-  //   "image" : "http://www.italianicious.com.au/uploads/italianicious/articles/Ital-0312-gnocch-sorrentino-630.jpg",
-  //   "type": req.body.type,
-  //   "rating": Number(req.body.rating),
-  //   "addressStreet": req.body.addressStreet,
-  //   "addressPostalCode": req.body.addressPostalCode,
-  //   "addressCity": req.body.addressCity,
-  //   "createdOn": new Date(),
-  //   "servings": Number(req.body.servings),
-  //   "servingsRemaining": Number(req.body.servings),
-  //   "seller": getUserIdFromJwt(req),
-  //   "pickupTime": req.body.pickupTime,
-  //   "ingredients": req.body.ingredients,
-  //   "allergens": req.body.allergens,
-  //   "categories": req.body.categories
-  // });
-  // pItem.save((err: mongoose.Error) => {
-  //   if (err) {
-  //     res.status(406).send({ "error": err });
-  //   } else {
-  //     res.status(200).send(pItem);
-  //   }
-  // });
+  ],
+    function (err, result) {
+      if (err) {
+        res.status(406).send({ "error": err });
+      } else {
+        res.status(200).send(result);
+      }
+    });
+
+
 }

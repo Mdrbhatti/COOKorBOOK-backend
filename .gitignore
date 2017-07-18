@@ -15,6 +15,7 @@ tmp
 
 #Build
 public/css/main.css
+images/
 
 # API keys and secrets
 .env
