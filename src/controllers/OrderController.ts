@@ -10,25 +10,31 @@ import * as mongoose from "mongoose";
 const async = require('async');
 
 export const getOrders = (req: Request, res: Response) => {
-  Order.find({}, function (err: mongoose.Error, orders: IOrder[]) {
-    if (err || orders.length == 0) {
+  const searchParams = {};
+  if (Object.keys(req.query).length != 0) {
+    Object.keys(req.query).forEach((key) => {
+      searchParams[key] = req.query[key];
+    });
+  }
+  Order.find(searchParams).exec(function (err: mongoose.Error, items: IOrder[]) {
+    if (err || items.length == 0) {
       res.status(400).send({ message: "Can't find any orders" });
     } else {
-      res.send(orders);
+      res.send(items);
     }
   });
 };
 
 export const orderItem = (req: Request, res: Response) => {
-  req.assert("id", "Invalid ID").isLength({ min: 24, max: 24 });
-  req.assert("time", "Invalid date format").isISO8601();
-  req.assert("servings", "Servings should be 1 or more").isInt({ min: 0 });
-  const errors = req.validationErrors();
-  // respond with errors
-  if (errors) {
-    res.status(400).send(errors);
-    return;
-  }
+  // req.assert("id", "Invalid ID").isLength({ min: 24, max: 24 });
+  // req.assert("time", "Invalid date format").isISO8601();
+  // req.assert("servings", "Servings should be 1 or more").isInt({ min: 0 });
+  // const errors = req.validationErrors();
+  // // respond with errors
+  // if (errors) {
+  //   res.status(400).send(errors);
+  //   return;
+  // }
   async.waterfall([
     // Search for item
     function (callback) {
@@ -42,13 +48,32 @@ export const orderItem = (req: Request, res: Response) => {
           }
         });
     },
+    // check if enough available servings, and update it
+    function (item: IPublishedItem, callback) {
+      let orderServings = Number(req.body.servings);
+      if (orderServings > item.servingsRemaining) {
+        callback('Not enough available serings');
+      }
+      else {
+        item.servingsRemaining -= orderServings;
+        item.save((err: mongoose.Error) => {
+          if (err) {
+            callback(err.message);
+          } else {
+            callback(null, item);
+          }
+        });
+      }
+    },
     // Save Order
     function (item, callback) {
       const order: IOrder = new Order({
-        "time": req.body.time,
-        "servings": req.body.servings,
+        "pickUptime": req.body.pickUptime,
+        "servings": Number(req.body.servings),
         "buyer": getUserIdFromJwt(req),
-        "publishedItem": item
+        "publishedItem": item,
+        "buyerComments": req.body.buyerComments,
+        "createdOn": new Date
       });
       order.save((err: mongoose.Error) => {
         if (err) {
@@ -57,7 +82,7 @@ export const orderItem = (req: Request, res: Response) => {
           callback(null, order);
         }
       });
-    }
+    },
   ],
     function (err, result) {
       if (err) {

@@ -13,6 +13,7 @@ import * as userController from "./controllers/UsersController";
 import * as itemController from "./controllers/ItemController";
 import * as orderController from "./controllers/OrderController";
 import * as reviewController from "./controllers/ReviewController";
+import * as pItemController from "./controllers/PublishedItemController";
 const jwt = require("jsonwebtoken");
 import { User } from "./models/UserModel";
 import { IUser } from "./interfaces/IUser";
@@ -93,22 +94,29 @@ app.use(function (req, res, next) {
 
 // Define all routes here
 app.use("/images", express.static("images"));
+// Auth routes
 app.post("/register", userController.postRegister);
 app.post("/login", userController.postLogin);
 app.put("/users/:id", passport.authenticate("jwt", { session: false }), userController.putUser);
 app.get("/users", passport.authenticate("jwt", { session: false }), userController.getUsers);
-app.post("/items/:id/publish", passport.authenticate("jwt", { session: false }), itemController.publishItem);
-app.get("/items/published", passport.authenticate("jwt", { session: false }), itemController.getPublishedItems);
-app.get("/items", /*passport.authenticate("jwt", { session: false }),*/ itemController.getItems);
-app.post("/items", /*passport.authenticate("jwt", { session: false }),*/ itemController.postItem);
-app.post("/items/:id/order", passport.authenticate("jwt", { session: false }), orderController.orderItem);
-app.get("/orders", passport.authenticate("jwt", { session: false }), orderController.getOrders);
+// app.post("/items/:id/publish", passport.authenticate("jwt", { session: false }), itemController.publishItem);
+// app.get("/items/published", passport.authenticate("jwt", { session: false }), itemController.getPublishedItems);
+app.get("/items", passport.authenticate("jwt", { session: false }), itemController.getItems);
+app.post("/items", passport.authenticate("jwt", { session: false }), itemController.postItem);
+// Reviews routes
 app.post("/users/:id/review", passport.authenticate("jwt", { session: false }), reviewController.postReview);
 app.get("/reviews", passport.authenticate("jwt", { session: false }), reviewController.getReviews);
 app.put("/reviews/:id", passport.authenticate("jwt", { session: false }), reviewController.putReview);
 app.delete("/reviews/:id", passport.authenticate("jwt", { session: false }), reviewController.deleteReview);
-app.get("/items/manage/published", itemController.getPublishedItemsForSeller);
+// Manage inventory routes
+app.get("/items/manage/published", passport.authenticate("jwt", { session: false }), itemController.getPublishedItemsForSeller);
 app.post("/items/manage", passport.authenticate("jwt", { session: false }), itemController.updatePublishedItemsForSeller);
+// Actual route for published items:
+app.post("/v1/pitem", passport.authenticate("jwt", { session: false }), pItemController.postItem);
+app.get("/v1/pitem", passport.authenticate("jwt", { session: false }), pItemController.getItem);
+// Order Routes
+app.post("/pitem/:id/order", passport.authenticate("jwt", { session: false }), orderController.orderItem);
+app.get("/order", passport.authenticate("jwt", { session: false }), orderController.getOrders);
 
 // Disable in prodcution
 app.use(errorHandler());

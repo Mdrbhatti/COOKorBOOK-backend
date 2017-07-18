@@ -3,9 +3,23 @@ import { IUser } from "./IUser";
 import { IItem } from "./IItem";
 
 export interface IPublishedItem extends mongoose.Document {
-  time: number;
+  name: string;
+  description: string;
+  sellerComments: string;
+  pricePerPortion: number;
+  bulkPricing: boolean;
+  image: string; 
+  type: string;
+  rating: number;
+  addressStreet: string;
+  addressPostalCode: string;
+  addressCity: string;
+  createdOn: Date;
   servings: number;
-  price: number;
+  servingsRemaining: number;
   seller: IUser;
-  item: IItem;
+  pickupTime: string[];
+  ingredients: string[];
+  allergens: string[];
+  categories: string[];
 }
