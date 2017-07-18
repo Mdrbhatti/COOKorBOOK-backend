@@ -111,6 +111,7 @@ app.delete("/reviews/:id", passport.authenticate("jwt", { session: false }), rev
 // Manage inventory routes
 app.get("/items/manage/published", passport.authenticate("jwt", { session: false }), itemController.getPublishedItemsForSeller);
 app.post("/items/manage", passport.authenticate("jwt", { session: false }), itemController.updatePublishedItemsForSeller);
+app.post("/items/manage/delete", passport.authenticate("jwt", { session: false }), itemController.deleteItem);
 // Actual route for published items:
 app.post("/v1/pitem", passport.authenticate("jwt", { session: false }), pItemController.postItem);
 app.get("/v1/pitem", passport.authenticate("jwt", { session: false }), pItemController.getItem);

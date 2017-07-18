@@ -263,8 +263,8 @@ export const getPublishedItemsForSeller = (req: Request, res: Response) => {
 export const updatePublishedItemsForSeller = (req: Request, res: Response) => {
   const errors: Array<string> = [];
   PublishedItem.findOneAndUpdate(
-    { "seller": getUserIdFromJwt(req), "item": req.body.itemId },
-    { "servings": req.body.servings, "price": req.body.price },
+    {"_id": req.body.itemId },
+      { "servings": req.body.servings, "pricePerPortion": req.body.pricePerPortion },
     function (err: mongoose.Error) {
       if (err) {
         res.status(400).send({ message: "Update failed." });
@@ -273,5 +273,16 @@ export const updatePublishedItemsForSeller = (req: Request, res: Response) => {
         res.status(200).send({ message: "success" });
       }
     });
+}
+
+export const deleteItem = (req: Request, res: Response) => {
+  const errors: Array<string> = [];
+  PublishedItem.findByIdAndRemove(req.body.itemId).exec(function (err: mongoose.Error) {
+    if (err) {
+      res.status(400).send({message: "Can't find any published items"});
+    } else {
+      res.status(200).send({message: "Item deleted."});
+    }
+  })
 }
 
