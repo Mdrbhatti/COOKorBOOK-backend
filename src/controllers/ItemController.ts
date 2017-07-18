@@ -262,9 +262,12 @@ export const getPublishedItemsForSeller = (req: Request, res: Response) => {
 
 export const updatePublishedItemsForSeller = (req: Request, res: Response) => {
   const errors: Array<string> = [];
+  console.log(req.body.pricePerPortion);
+  console.log(req.body.itemId);
+  console.log(req.body.servings);
   PublishedItem.findOneAndUpdate(
-    { "seller": getUserIdFromJwt(req), "item": req.body.itemId },
-    { "servings": req.body.servings, "price": req.body.price },
+    {"_id": req.body.itemId },
+      { "servings": req.body.servings, "pricePerPortion": req.body.pricePerPortion },
     function (err: mongoose.Error) {
       if (err) {
         res.status(400).send({ message: "Update failed." });
