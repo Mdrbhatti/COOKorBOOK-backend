@@ -11,7 +11,7 @@ import { IPublishedItem } from "../interfaces/IPublishedItem";
 import { getUserIdFromJwt } from "./UsersController";
 import { Request, Response } from "express";
 import * as mongoose from "mongoose";
-import {User} from "../models/UserModel";
+import { User } from "../models/UserModel";
 const fs = require("fs");
 const async = require("async");
 const unf = require("unique-file-name");
@@ -163,11 +163,11 @@ export const postItem = (req: any, res: Response) => {
                   } else {
                     callback(null);
                   }
-                })
+                });
               }
-            })
+            });
           }
-        })
+        });
       } else {
         callback(null);
       }
@@ -251,14 +251,7 @@ export const publishItem = (req: Request, res: Response) => {
 };
 
 export const getPublishedItemsForSeller = (req: Request, res: Response) => {
-  const errors: Array<string> =[];
-
-  // const user = User.findOne({"username": req.body.seller});
-  console.log(getUserIdFromJwt(req));
-
-
-
-  PublishedItem.find({"seller": getUserIdFromJwt(req)}).populate("item").exec( function (err: mongoose.Error, items: IPublishedItem[]) {
+  PublishedItem.find({ "seller": getUserIdFromJwt(req) }).populate("item").exec(function (err: mongoose.Error, items: IPublishedItem[]) {
     if (err || items.length == 0) {
       res.status(400).send({ message: "Can't find any published items" });
     } else {
@@ -268,14 +261,17 @@ export const getPublishedItemsForSeller = (req: Request, res: Response) => {
 }
 
 export const updatePublishedItemsForSeller = (req: Request, res: Response) => {
-  const errors: Array<string> =[];
-  PublishedItem.findOneAndUpdate({"seller": getUserIdFromJwt(req), "item": req.body.itemId}, {"servings": req.body.servings, "price": req.body.price}, function (err: mongoose.Error) {
-    if (err) {
-      res.status(400).send({ message: "Update failed." });
-    }
-    else{
-      res.status(200).send({message:"success"});
-    }
-  });
+  const errors: Array<string> = [];
+  PublishedItem.findOneAndUpdate(
+    { "seller": getUserIdFromJwt(req), "item": req.body.itemId },
+    { "servings": req.body.servings, "price": req.body.price },
+    function (err: mongoose.Error) {
+      if (err) {
+        res.status(400).send({ message: "Update failed." });
+      }
+      else {
+        res.status(200).send({ message: "success" });
+      }
+    });
 }
 
