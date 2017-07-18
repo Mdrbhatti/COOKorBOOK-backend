@@ -13,6 +13,7 @@ import * as userController from "./controllers/UsersController";
 import * as itemController from "./controllers/ItemController";
 import * as orderController from "./controllers/OrderController";
 import * as reviewController from "./controllers/ReviewController";
+import * as pItemController from "./controllers/PublishedItemController";
 const jwt = require("jsonwebtoken");
 import { User } from "./models/UserModel";
 import { IUser } from "./interfaces/IUser";
@@ -114,6 +115,7 @@ app.delete("/reviews/:id", passport.authenticate("jwt", { session: false }), rev
 app.get("/items/manage/published", passport.authenticate("jwt", { session: false }), itemController.getPublishedItemsForSeller);
 app.post("/items/manage", passport.authenticate("jwt", { session: false }), itemController.updatePublishedItemsForSeller);
 // Actual route for published items:
+app.post("/v1/pitem", passport.authenticate("jwt", { session: false }), pItemController.postItem);
 
 
 // Disable in prodcution
