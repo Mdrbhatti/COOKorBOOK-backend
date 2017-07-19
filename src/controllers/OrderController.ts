@@ -25,6 +25,18 @@ export const getOrders = (req: Request, res: Response) => {
   });
 };
 
+export const getOrdersForItem = (req: Request, res: Response) => {
+  Order.find({"publishedItem": req.params.id}).populate("buyer").exec(function (err: mongoose.Error, items: IOrder[]) {
+    if (err) {
+      res.status(400).send({ message: "Can't find any orders" });
+    } else {
+      res.send(items);
+    }
+  });
+};
+
+
+
 export const orderItem = (req: Request, res: Response) => {
   // req.assert("id", "Invalid ID").isLength({ min: 24, max: 24 });
   // req.assert("time", "Invalid date format").isISO8601();

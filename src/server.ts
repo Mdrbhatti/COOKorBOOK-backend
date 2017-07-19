@@ -109,12 +109,14 @@ app.delete("/reviews/:id", passport.authenticate("jwt", { session: false }), rev
 app.get("/items/manage/published", passport.authenticate("jwt", { session: false }), itemController.getPublishedItemsForSeller);
 app.post("/items/manage", passport.authenticate("jwt", { session: false }), itemController.updatePublishedItemsForSeller);
 app.post("/items/manage/delete", passport.authenticate("jwt", { session: false }), itemController.deleteItem);
+app.post("/items/manage/order/delete", passport.authenticate("jwt", { session: false }), itemController.deleteOrder);
 // Actual route for published items:
 app.post("/v1/pitem", passport.authenticate("jwt", { session: false }), pItemController.postItem);
 app.get("/v1/pitem", passport.authenticate("jwt", { session: false }), pItemController.getItem);
 // Order Routes
 app.post("/v1/pitem/:id/order", passport.authenticate("jwt", { session: false }), orderController.orderItem);
 app.get("/v1/order", passport.authenticate("jwt", { session: false }), orderController.getOrders);
+app.get("/v1/order/:id", passport.authenticate("jwt", { session: false }), orderController.getOrdersForItem);
 // return image
 app.get("/image/:src", pItemController.getImage);
 

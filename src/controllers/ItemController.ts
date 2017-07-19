@@ -7,6 +7,7 @@ import { ICategory } from "../interfaces/ICategory";
 import { Image } from "../models/ImageModel";
 import { IImage } from "../interfaces/IImage";
 import { PublishedItem } from "../models/PublishedItemModel";
+import { Order } from "../models/OrderModel";
 import { IPublishedItem } from "../interfaces/IPublishedItem";
 import { getUserIdFromJwt } from "./UsersController";
 import { Request, Response } from "express";
@@ -285,4 +286,18 @@ export const deleteItem = (req: Request, res: Response) => {
     }
   })
 }
+
+
+export const deleteOrder = (req: Request, res: Response) => {
+  const errors: Array<string> = [];
+  console.log("Order id: " + req.body.orderId);
+  Order.findByIdAndRemove(req.body.orderId).exec(function (err: mongoose.Error) {
+    if (err) {
+      res.status(400).send({message: "Can't find the order."});
+    } else {
+      res.status(200).send({message: "Order deleted."});
+    }
+  })
+}
+
 
