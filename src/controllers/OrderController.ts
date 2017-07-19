@@ -16,18 +16,8 @@ export const getOrders = (req: Request, res: Response) => {
       searchParams[key] = req.query[key];
     });
   }
-  Order.find(searchParams).exec(function (err: mongoose.Error, items: IOrder[]) {
+  Order.find(searchParams).populate("buyer").exec(function (err: mongoose.Error, items: IOrder[]) {
     if (err || items.length == 0) {
-      res.status(400).send({ message: "Can't find any orders" });
-    } else {
-      res.send(items);
-    }
-  });
-};
-
-export const getOrdersForItem = (req: Request, res: Response) => {
-  Order.find({"publishedItem": req.params.id}).populate("buyer").exec(function (err: mongoose.Error, items: IOrder[]) {
-    if (err) {
       res.status(400).send({ message: "Can't find any orders" });
     } else {
       res.send(items);

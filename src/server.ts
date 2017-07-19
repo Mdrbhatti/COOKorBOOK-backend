@@ -116,7 +116,6 @@ app.get("/v1/pitem", passport.authenticate("jwt", { session: false }), pItemCont
 // Order Routes
 app.post("/v1/pitem/:id/order", passport.authenticate("jwt", { session: false }), orderController.orderItem);
 app.get("/v1/order", passport.authenticate("jwt", { session: false }), orderController.getOrders);
-app.get("/v1/order/:id", passport.authenticate("jwt", { session: false }), orderController.getOrdersForItem);
 // return image
 app.get("/image/:src", pItemController.getImage);
 
