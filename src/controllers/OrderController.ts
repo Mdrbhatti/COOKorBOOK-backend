@@ -16,7 +16,7 @@ export const getOrders = (req: Request, res: Response) => {
       searchParams[key] = req.query[key];
     });
   }
-  Order.find(searchParams).exec(function (err: mongoose.Error, items: IOrder[]) {
+  Order.find(searchParams).populate("buyer").exec(function (err: mongoose.Error, items: IOrder[]) {
     if (err || items.length == 0) {
       res.status(400).send({ message: "Can't find any orders" });
     } else {
@@ -24,6 +24,8 @@ export const getOrders = (req: Request, res: Response) => {
     }
   });
 };
+
+
 
 export const orderItem = (req: Request, res: Response) => {
   // req.assert("id", "Invalid ID").isLength({ min: 24, max: 24 });
