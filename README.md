@@ -11,7 +11,7 @@
 
 - Install dependencies
 ```
-cd <project_name>
+cd COOKorBOOK-backend
 npm install
 ```
 - Start your mongoDB server (you'll probably want another command prompt)
@@ -22,7 +22,7 @@ mongod
 ```
 npm start
 ```
-Navigate to `http://localhost:3000`
+Navigate to `http://localhost:8000`
 
 # TypeScript + Node 
 The main purpose of this repository is to show a good end-to-end project setup and workflow for writing Node code in TypeScript.
